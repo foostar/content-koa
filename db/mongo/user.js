@@ -1,0 +1,38 @@
+const hash = require('utils/hash');
+const mongoose = require('mongoose');
+
+const user = mongoose.Schema({
+    username: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    id: {
+        index: true,
+        type: Number
+    },
+    password: {
+        type: String,
+        required: true,
+        set: v => hash(v)
+    },
+    level: {
+        // 0: admin
+        // 1: author
+        // 2: redactor
+        type: Number,
+        default: 1
+    }
+}, {
+    timestamps: true
+});
+
+user.pre('save', async function (next) {
+    console.log(this.isNew);
+    if (!this.isNew) return next();
+
+    this.id = await module.exports.count() + 1;
+    next();
+});
+
+module.exports = mongoose.model('user', user);
