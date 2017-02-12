@@ -6,6 +6,11 @@ module.exports = (opt = {}) => {
         secret: config.JWT_SECRET,
         audience: opt.audience,
         issuer: opt.issuer
+    }).unless({
+        path: [
+            '/api/signin',
+            '/api/signup'
+        ]
     });
 };
 
