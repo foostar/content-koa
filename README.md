@@ -13,13 +13,13 @@
     - `429`: Too Many Requests: 因为访问频繁，你已经被限制访问，稍后重试
     - `500`: Internal Server Error: 服务器错误，确认状态并报告问题
 
-# Response
+# 响应实体结构
 
 ```JSON
 {
     "status": {
-        "code": 0 | ${code},
-        "message": "success" | ${error.message}
+        "code": 0 | {code},
+        "message": "success" | {error.message}
     },
     "data": {}
 }
@@ -33,3 +33,50 @@
     - `10422`: 用户名已经被注册
 
 
+## Routes 目录结构决定路由结构
+
+```
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ /api/contents                           ┃  {workspaceRoot}/api/contents.js                            ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ /api/signin                             ┃  {workspaceRoot}/api/signin.js                              ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ /api/signup                             ┃  {workspaceRoot}/api/signup.js                              ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ /api/user                               ┃  {workspaceRoot}/api/user.js                                ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ /                                       ┃  {workspaceRoot}/index.js                                   ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+```
+
+
+# JSON WEB TOKEN
+```JSON
+"url": "/api/signup"
+"url": "/api/signin"
+
+"method": "POST"
+
+"req": {
+    "username": "yinz",
+    "password": "password"
+}
+
+"res": {
+  "status": {
+    "code": 0,
+    "message": "success"
+  },
+  "data": {
+    "username": "yinz",
+    "id": 3,
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InlpbnoxIiwiaWF0IjoxNDg2OTAwOTUyLCJleHAiOjE0ODY5ODczNTJ9.uSpPb4sk123NzHyUzu39xhp3o0Semuj_RG2XrFygE4o"
+  }
+}
+
+```
+
+其他请求应带上 header
+```
+"Authorization": "Bearer {jwt}"
+```
