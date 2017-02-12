@@ -50,7 +50,7 @@
 ```
 
 
-# JSON WEB TOKEN
+# JSON Web Token
 ```JSON
 "url": "/api/signup"
 "url": "/api/signin"
