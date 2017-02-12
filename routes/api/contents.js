@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const router = new Router();
-const $ = require('controllers/article');
+const $ = require('controllers/content');
 
 router.get('/', $.list);
 router.post('/', $.create);

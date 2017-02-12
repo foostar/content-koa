@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-
 const Router = require('koa-router');
 const router = new Router();
 
@@ -47,7 +46,6 @@ function getRoutesPath (readPath) {
     if (path.isAbsolute(readPath)) {
         return readPath;
     }
-
     return path.resolve(
         path.dirname(module.parent.filename),
         readPath
@@ -71,7 +69,7 @@ function getRouerMap (r) {
                 });
             } else if (readPath !== __dirname) {
                 result.push({
-                    route: prefix.replace(/\/$/, ''),
+                    route: prefix.replace(/.+\/$/, ''),
                     filePath: absolutePath
                 });
             }

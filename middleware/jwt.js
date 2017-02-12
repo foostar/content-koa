@@ -8,6 +8,7 @@ module.exports = (opt = {}) => {
         issuer: opt.issuer
     }).unless({
         path: [
+            '/',
             '/api/signin',
             '/api/signup'
         ]
