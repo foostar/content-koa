@@ -6,25 +6,26 @@ const router = new Router();
 module.exports = (readPath) => {
     const absoluteReadPath = getRoutesPath(readPath);
     const routerMap = getRouerMap(absoluteReadPath);
-    routerMap.map(({route, filePath}, idx) => {
+    routerMap.forEach(({route, filePath}, idx) => {
         const m = require(filePath);
-        if (m.constructor.name === 'Router') {
-            router.use(route, m.routes());
-            if (idx === 0) {
-                log(`\n┏${Array(42).join('━')}┳${Array(83).join('━')}┓`.black);
-            } else {
-                log(`┣${Array(42).join('━')}╋${Array(83).join('━')}┫`.black);
-            }
-            log(
-                '┃'.black,
-                `${fixWidth(route)}`.green,
-                '┃'.black,
-                ` ${fixWidth(filePath, 80)}`.blue,
-                '┃'.black
-            );
-            if (idx === routerMap.length - 1) {
-                log(`┗${Array(42).join('━')}┻${Array(83).join('━')}┛\n`.black);
-            }
+        if (m.constructor.name !== 'Router') return;
+
+        router.use(route, m.routes());
+
+        if (idx === 0) {
+            log(`\n┏${Array(42).join('━')}┳${Array(83).join('━')}┓`.black);
+        } else {
+            log(`┣${Array(42).join('━')}╋${Array(83).join('━')}┫`.black);
+        }
+        log(
+            '┃'.black,
+            `${fixWidth(route)}`.green,
+            '┃'.black,
+            ` ${fixWidth(filePath, 80)}`.blue,
+            '┃'.black
+        );
+        if (idx !== 0 && idx === routerMap.length - 1) {
+            log(`┗${Array(42).join('━')}┻${Array(83).join('━')}┛\n`.black);
         }
     });
     return router;
