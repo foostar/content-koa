@@ -20,24 +20,12 @@ exports.checkPassword = async (ctx, next) => {
 
     if (!user) {
         ctx.status = 404;
-        ctx.body = {
-            status: {
-                code: 10404,
-                message: '用户不存在'
-            }
-        };
-        return;
+        throw Error(10404);
     }
 
     if (hash(password) !== user.password) {
         ctx.status = 401;
-        ctx.body = {
-            status: {
-                code: 10401,
-                message: '密码错误'
-            }
-        };
-        return;
+        throw Error(10401);
     }
     next();
 };
@@ -65,13 +53,7 @@ exports.signup = async (ctx, next) => {
     const {username, password} = ctx.request.body;
     if (await User.findOne({username})) {
         ctx.status = 422;
-        ctx.body = {
-            status: {
-                code: 10422,
-                message: '用户名已被注册'
-            }
-        };
-        return;
+        throw Error(10422);
     }
     const user = await new User({username, password}).save();
     const token = getToken(username);
@@ -100,13 +82,7 @@ exports.show = async (ctx, next) => {
     });
     if (!user) {
         ctx.status = 404;
-        ctx.body = {
-            status: {
-                code: 10404,
-                message: '用户不存在'
-            }
-        };
-        return;
+        throw Error(10404);
     }
     ctx.body = {
         status: {
