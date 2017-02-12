@@ -7,6 +7,7 @@
     "dependencies": {
         "app-module-path": "^2.2.0",
         "colors": "^1.1.2",
+        "kcors": "2",
         "koa": "next",
         "koa-bodyparser": "next",
         "koa-jwt": "koa2",

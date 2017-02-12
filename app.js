@@ -6,6 +6,7 @@ require('colors');
 require('app-module-path/register');
 
 const Koa = require('koa');
+const cors = require('kcors');
 const bodyParser = require('koa-bodyparser');
 const logger = require('koa-logger');
 
@@ -16,6 +17,7 @@ const app = new Koa();
 const mountRoutes = require('utils/mount-routes');
 const router = mountRoutes();
 
+app.use(cors());
 app.use(error());
 app.use(logger());
 app.use(bodyParser());
