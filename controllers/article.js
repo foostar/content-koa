@@ -1,19 +1,24 @@
 exports.list = async (ctx, next) => {
-    ctx.body = 'list';
+    const {username} = ctx.state.user;
+    ctx.body = {username};
 };
 
 exports.create = async (ctx, next) => {
-    ctx.body = 'create';
+    const {username} = ctx.state.user;
+    ctx.body = {username};
 };
 
 exports.show = async (ctx, next) => {
-    ctx.body = 'show';
+    const {username} = ctx.state.user;
+    ctx.body = {username};
 };
 
 exports.update = async (ctx, next) => {
-    ctx.body = 'update';
+    const {username} = ctx.state.user;
+    ctx.body = {username};
 };
 
 exports.destroy = async (ctx, next) => {
-    ctx.body = 'update';
+    const {username} = ctx.state.user;
+    ctx.body = {username};
 };

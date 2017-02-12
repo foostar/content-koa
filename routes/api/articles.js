@@ -5,10 +5,10 @@ const $ = require('controllers/article');
 const jwt = require('middleware/jwt');
 
 router.get('/', jwt(), $.list);
-router.post('/', $.create);
+router.post('/', jwt(), $.create);
 
-router.get('/:id', $.show);
-router.patch('/:id', $.update);
-router.delete('/:id', $.destroy);
+router.get('/:id', jwt(), $.show);
+router.patch('/:id', jwt(), $.update);
+router.delete('/:id', jwt(), $.destroy);
 
 module.exports = router;
