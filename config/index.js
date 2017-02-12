@@ -1,4 +1,4 @@
-module.exports = {
-    JWT_SECRET: 'jwt-yinz-secret',
-    MONGO_DB: 'mongodb://127.0.0.1:27017/test'
-};
+module.exports = process.env.NODE_ENV === 'production'
+    ? require('./prod')
+    : require('./dev');
+
