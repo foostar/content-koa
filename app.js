@@ -17,13 +17,13 @@ mongoose.connect(config.MONGO_DB);
 
 const app = new Koa();
 
+app.use(error());
+
 app.use(cors());
 app.use(jwt());
-app.use(error());
 app.use(logger());
 app.use(bodyParser());
 
-// default mount `./routes`
 app.use(mountRoutes().routes());
 
 app.listen(8080, () => {
