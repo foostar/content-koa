@@ -70,7 +70,7 @@ function getRouerMap (r) {
                 });
             } else if (readPath !== __dirname) {
                 result.push({
-                    route: prefix.replace(/.+\/$/, ''),
+                    route: prefix === '/' ? '/' : prefix.replace(/\/$/, ''),
                     filePath: absolutePath
                 });
             }

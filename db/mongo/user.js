@@ -28,7 +28,6 @@ const user = mongoose.Schema({
 });
 
 user.pre('save', async function (next) {
-    console.log(this.isNew);
     if (!this.isNew) return next();
 
     this.id = await module.exports.count() + 1;
