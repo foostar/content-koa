@@ -17,7 +17,6 @@ function getToken (username, opt = {}) {
 exports.checkPassword = async (ctx, next) => {
     const {username, password} = ctx.request.body;
     const user = await User.findOne({username});
-
     if (!user) {
         ctx.status = 404;
         throw Error(10404);
@@ -31,9 +30,9 @@ exports.checkPassword = async (ctx, next) => {
 };
 
 exports.signin = async (ctx, next) => {
+    await next();
     const {username} = ctx.request.body;
     const user = await User.findOne({username});
-
     const token = getToken(username);
 
     ctx.body = {
@@ -97,6 +96,8 @@ exports.show = async (ctx, next) => {
 
 // 修改密码
 exports.update = async (ctx, next) => {
+    await next();
+
     const {username, newPassword} = ctx.query;
     const user = await User.findOne({username});
 
@@ -120,6 +121,8 @@ exports.update = async (ctx, next) => {
 };
 
 exports.destroy = async (ctx, next) => {
+    await next();
+
     const {username} = ctx.request.body;
     await User.remove({username});
     ctx.body = {

@@ -3,7 +3,7 @@ const {merge} = require('lodash');
 const ERROR = {
     '10401': {
         status: {
-            code: 10404,
+            code: 10401,
             message: '密码错误'
         }
     },
