@@ -27,11 +27,11 @@ const user = mongoose.Schema({
     timestamps: true
 });
 
-user.pre('save', async function (next) {
-    if (!this.isNew) return next();
+// user.pre('save', async function (next) {
+//     if (!this.isNew) return next();
 
-    this.id = await module.exports.count() + 1;
-    next();
-});
+//     this.id = await module.exports.count() + 1;
+//     next();
+// });
 
 module.exports = mongoose.model('user', user);

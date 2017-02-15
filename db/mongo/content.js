@@ -8,7 +8,8 @@ const content = mongoose.Schema({
     },
     tag: String,
     content: String,
-    author: ObjectId,
+    category: String,
+    author: {type: ObjectId, index: true},
     redactor: ObjectId
 }, {
     timestamp: true

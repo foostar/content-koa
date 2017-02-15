@@ -25,6 +25,4 @@ app.use(bodyParser());
 
 app.use(mountRoutes().routes());
 
-app.listen(8080, () => {
-    console.log('server start at 8080');
-});
+module.exports = app
