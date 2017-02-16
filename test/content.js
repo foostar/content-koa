@@ -2,6 +2,8 @@ const app = require('../app').listen()
 const request = require('supertest');
 
 
+const Content = require('db/mongo/content');
+
 describe('content', function () {
     let testContent = {title: 'Hello', content: '<h1>hello world</h1>', category:'other'};
     let token, accountId, contentId;
@@ -15,10 +17,14 @@ describe('content', function () {
         contentId = res.body.data.id;
 
     });
+
+    after(async function () {
+        await Content.remove({author:accountId}).exec()
+    });
     
     describe('create', function () {
         it('should return 200', async function () {
-            return request(app)
+            const res = await request(app)
                     .post('/api/content')
                     .set('Authorization', `Bearer ${token}`)
                     .send(testContent)

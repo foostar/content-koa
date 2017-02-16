@@ -37,7 +37,7 @@ exports.list = async (ctx, next) => {
             message: 'success'
         },
         data: {
-            skip:0,
+            skip:options.skip,
             count,
             contents
         }
@@ -62,13 +62,13 @@ exports.show = async (ctx, next) => {
 exports.update = async (ctx, next) => {
     let con = await Content.findById(ctx.params.id);
     if (!con){ 
-        ctx.status = 404;
+        ctx.status = 500;
         throw Error(20404);
     }
 
     if (con.author !== ctx.state.user.id && ctx.state.user.level !== 0) {
-        ctx.status = 422;
-        throw Error(20422);
+        ctx.status = 403;
+        throw Error(20403);
     }
 
     _.assign(con, _.pick(ctx.request.body, "title", "content",  "category"))

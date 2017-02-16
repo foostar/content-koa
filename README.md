@@ -36,7 +36,10 @@
     - `10422`: 用户名已经被注册
 - `20***` 文章类
     - `20404`: 文章不存在
-    - `20422`: 没有修改此文章的权限
+    - `20403`: 没有修改此文章的权限
+- `30***` 上游帐号类
+    - `20404`: 上游帐号不存在
+    - `20422`: 重复的平台帐号
 
 
 ## Routes 目录结构决定路由结构
@@ -177,7 +180,7 @@ fields        | 默认值["id", "title", "category"]
 ### Update
 **PATCH** `/api/content/:id`
 
-修改文章内容，只能自己创建的内容，可修改字段为"title", "content", "category"，管理员可以修改任意内容
+修改文章内容，只能自己创建的内容，可修改字段为"title", "content", "category"，管理员可以修改作者的任意内容
 
 ```js
 //req
@@ -204,6 +207,135 @@ fields        | 默认值["id", "title", "category"]
 }
 ```
 
+## Upstream
+
+### Create
+
+**POST** `/api/upstream`
+
+```js
+//req
+{"platform": "tencent", "account": "123456@qq.com", session: "a=1;b=2"}
+
+//res
+{ 
+    "status": { 
+        "code": 0, 
+        "message": "success" 
+    },
+    "data": { 
+        "id": "616439363565363166383763" 
+    } 
+}
+```
+
+### Delete
+**DELETE** `/api/upstream/:id`
+
+```js
+//res
+{ 
+    "status": { 
+        "code": 0, 
+        "message": "success" 
+    },
+    "data": {}
+}
+```
+
+### Show
+**GET** `/api/upstream/:id`
+
+```js 
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "id": "616439363565363166383763",
+        "platform": "tencent",
+        "account": "123456@qq.com",
+        "session": "a=1;b=2",
+        "creater": "58a5e480ce528b6c97be9630",
+        "createdAt": "2017-02-16T17:44:36.607Z",
+        "updatedAt": "2017-02-16T17:44:36.607Z"
+    }
+}
+```
+
+### Update
+
+修改上游帐号，目前只允许修改session
+
+**Patch** `/api/upstream/:id`
+
+```js
+//req
+{"session":"modified"}
+
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "id": "616439363565363166383763",
+        "platform": "tencent",
+        "account": "123456@qq.com",
+        "session": "modified",
+        "creater": "58a5e480ce528b6c97be9630",
+        "createdAt": "2017-02-16T17:44:36.607Z",
+        "updatedAt": "2017-02-16T18:10:03.882Z"
+    }
+}
+```
+
+### List
+列出符合条件的上游帐号。
+
+Parameter     | Explain                 
+------------- | ----------------------- 
+skip          | 默认值为0                
+imit          | 默认值5，最大100         
+account       | 按前缀匹配方式查找，返回以此参数开头的帐号             
+platform      | 所属平台，精确匹配
+
+
+```js
+//req /api/upstream?account=t
+
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "skip": 0,
+        "count": 2,
+        "upstreams": [{
+            "id": "333166303134623533653538",
+            "platform": "test",
+            "account": "test",
+            "session": "modified",
+            "creater": "58a5e8c45d5651708e664142",
+            "createdAt": "2017-02-16T18:35:18.027Z",
+            "updatedAt": "2017-02-16T18:35:18.093Z"
+        }, {
+            "id": "333134613335343432313239",
+            "platform": "test",
+            "account": "test2",
+            "session": "a=1;b=2",
+            "creater": "58a5e8c45d5651708e664142",
+            "createdAt": "2017-02-16T18:35:18.040Z",
+            "updatedAt": "2017-02-16T18:35:18.040Z"
+        }]
+    }
+}
+```
 
 
 

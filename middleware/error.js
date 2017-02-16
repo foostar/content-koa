@@ -25,10 +25,22 @@ const ERROR = {
             message: '没有该文章'
         }
     },
-    '20422':{
+    '20403':{
         status: {
-            code: 20422,
+            code: 20403,
             message: '没有修改此文章的权限'
+        }
+    },
+    '30404':{
+        status: {
+            code: 30404,
+            message: '上游帐号不存在'
+        }
+    },
+    '30422':{
+        status: {
+            code: 30422,
+            message: '重复的平台帐号'
         }
     }
 };
