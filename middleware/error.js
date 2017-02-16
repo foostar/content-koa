@@ -18,6 +18,18 @@ const ERROR = {
             code: 10422,
             message: '用户已存在'
         }
+    },
+    '20404':{
+        status: {
+            code: 20404,
+            message: '没有该文章'
+        }
+    },
+    '20422':{
+        status: {
+            code: 20422,
+            message: '没有修改此文章的权限'
+        }
     }
 };
 

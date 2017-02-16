@@ -7,6 +7,5 @@ router.post('/', $.create);
 
 router.get('/:id', $.show);
 router.patch('/:id', $.update);
-router.delete('/:id', $.destroy);
 
 module.exports = router;

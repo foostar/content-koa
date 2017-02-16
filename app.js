@@ -17,8 +17,8 @@ mongoose.connect(config.MONGO_DB);
 
 const app = new Koa();
 
-app.use(error());
 app.use(logger());
+app.use(error());
 app.use(cors());
 app.use(jwt());
 app.use(bodyParser());

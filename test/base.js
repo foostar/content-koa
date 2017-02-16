@@ -1,36 +1,35 @@
-const assert = require('assert');
 const app = require('../app').listen()
 const request = require('supertest');
 const _ = require('lodash')
 
-describe('Home page', function () {
-    it('should return 200', async function() {
-        return request(app)
-            .get('/')
-            .expect(200)
-    });
-})
+const User = require('db/mongo/user');
+let user
+before(async function() {
+    user = await User.findOne({'username': 'test'});
+    if (!user) {
+        user = await new User({
+            'username': 'test',
+            'password': '123456',
+            'level': 0
+        }).save();
+    }
+});
+// after(async function() {
+//     await user.remove()
+// });
 
-describe('API', function() {
-    const User = require('db/mongo/user');
-    let user
-    before(async function() {
-        user = await User.findOne({'username': 'test'});
-        if (!user) {
-            user = await new User({
-                'username': 'test',
-                'password': '123456',
-                'level': 0
-            }).save();
-        }
-    });
-    after(async function() {
-        await user.remove()
-    });
 
-    describe('#signup()',function () { 
+describe('base', function() {
+    describe('home page', function () {
+        it('should return 200', async function() {
+            return request(app)
+                .get('/')
+                .expect(200)
+        });
+    })
+
+    describe('signup',function () { 
         it('should return user object and jwt', async function() {
-        console.log(user.id)
             return request(app)
                 .post('/api/signin')
                 .set('Content-Type', 'application/json')
