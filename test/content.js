@@ -5,7 +5,7 @@ const request = require('supertest');
 const Content = require('db/mongo/content');
 
 describe('content', function () {
-    let testContent = {title: 'Hello', content: '<h1>hello world</h1>', category:'other'};
+    let testContent = {title: 'Hello', type: 'article' ,content: '<h1>hello world</h1>', category:'other'};
     let token, accountId, contentId;
     before(async function() {
         let res = await request(app)

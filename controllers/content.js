@@ -1,7 +1,7 @@
 const Content = require('db/mongo/content');
 const _ = require ('lodash')
 
-const CONTENT_FIELDS = ["id", "title", "content", "tag", "category", "author", "redactor", "createdAt", "updatedAt"]
+const CONTENT_FIELDS = ["id", "type", "title", "content", "tag", "category", "author", "redactor", "createdAt", "updatedAt"]
 
 exports.create = async (ctx, next) => {
     const con  = _.extend({}, ctx.request.body, {author: ctx.state.user.id});
@@ -22,7 +22,7 @@ exports.list = async (ctx, next) => {
     if (ctx.query.limit) options.limit = Math.min(parseInt(ctx.query.limit), 100) || 5;
     if (ctx.query.skip) options.skip = parseInt(ctx.query.skip) || 0;
 
-    let returnFields = ["id", "title", "category", "createdAt", "updatedAt"];
+    let returnFields = ["id", "type", "title", "category", "createdAt", "updatedAt"];
     if (ctx.query.fields) {
         const fields = _.isArray(ctx.query.fields) ? ctx.query.fields : [ctx.query.fields];
         returnFields = _.intersection(fields, CONTENT_FIELDS);

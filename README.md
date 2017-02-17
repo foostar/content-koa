@@ -102,6 +102,7 @@
 //req
 {
     "title": "Hello", 
+    "type": "article", //or "video"
     "content": "<h1>hello world</h1>", 
     "category":"other"
 }
@@ -166,6 +167,7 @@ fields        | 默认值["id", "title", "category"]
     },
     "data": {
         "id": "58a5643ddb4e6846b8d6afa8",
+        "type": "article",
         "title": "Hello",
         "content": "<h1>hello world</h1>",
         "tag": [],
