@@ -93,7 +93,7 @@ describe('content', function () {
                     .expect(200)
                     .expect(function(res) {
                         if (res.body.status.code !== 0) throw new Error("code isn't 0");
-                        if (res.body.data.tag.indexOf(tag) == -1 ) throw new Error("it doesn't contain new tag");
+                        if (res.body.data.tags.indexOf(tag) == -1 ) throw new Error("it doesn't contain new tag");
                     });
 
             return request(app)
@@ -101,7 +101,7 @@ describe('content', function () {
                     .set('Authorization', `Bearer ${token}`)
                     .expect(200)
                     .expect(function(res) {
-                        if (res.body.data.tag.indexOf(tag) == -1 ) throw new Error("it doesn't contain new tag when re-query content");
+                        if (res.body.data.tags.indexOf(tag) == -1 ) throw new Error("it doesn't contain new tag when re-query content");
                     });
         })
 
@@ -117,15 +117,17 @@ describe('content', function () {
                     .expect(200)
                     .expect(function (res) {
                         if (res.body.status.code !== 0) throw new Error("code isn't 0");
-                        if (res.body.data.tag.indexOf(tag) != -1 ) throw new Error("it does contain the deleted tag");
+                        if (res.body.data.tags.indexOf(tag) != -1 ) throw new Error("it does contain the deleted tag");
                     });
         })
+    });
 
+    describe('most-common-tags', function () {
         it('should return most common tags', async function () {
             let r = []
             for (var i = 0; i <= 50; i++) {
                 let tag = 1;
-                while(Math.random() < 0.9){
+                while(Math.random() < 0.85){
                     tag++;
                 }
                 r.push(request(app).post(`/api/content/${contentId}/tag/${tag}`).set('Authorization', `Bearer ${token}`));
@@ -144,5 +146,34 @@ describe('content', function () {
                     });
         })
     });
+
+    describe('search', function () {
+        before(async function () {
+            let r = [];
+            for (var i = 1; i <= 5; i++) {
+                let con = {title: 'Hello', type: 'article' ,content: '<h1>hello world</h1>', tags:[`t${i}`, `t${i+1}`, `t${i+2}`,`t${i+3}`] , category:'other'}
+                r.push(request(app).post('/api/content').set('Authorization', `Bearer ${token}`).send(con));
+            }
+            await Promise.all(r);
+        });
+
+        it('should return contents', async function () {
+            return request(app)
+                    .get('/api/content/search')
+                    .query({
+                        includeTags:['t3','t4'], 
+                        excludeTags:['t5','t6'],
+                        fields:['id', 'tags']
+                    })
+                    .set('Authorization', `Bearer ${token}`)
+                    .expect(200)
+                    .expect(function(res) {
+                        if (res.body.status.code !== 0) throw new Error("code isn't 0");
+                        if (res.body.data.contents[0].tags.indexOf('t1') == -1) throw new Error("it doesn't contain t1");
+                    });
+        });
+    });
+
+
 
 });

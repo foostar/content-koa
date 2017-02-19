@@ -5,6 +5,8 @@ const $ = require('controllers/content');
 router.get('/', $.list);
 router.post('/', $.create);
 
+router.get('/search', $.search);
+
 router.get('/most-common-tags', $.listCommonTags);
 router.post('/:id/tag/:tag', $.addTag);
 router.del('/:id/tag/:tag', $.removeTag);

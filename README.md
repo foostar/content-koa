@@ -128,7 +128,7 @@ Parameter     | Explain
 ------------- | ----------------------- 
 skip          | 默认值为0                
 imit          | 默认值5，最大100         
-fields        | 默认值["id", "title", "category"] 
+fields        | 默认值["id", "type", "tags", "title", "category", "createdAt", "updatedAt"]
 
 ```js
 
@@ -170,7 +170,7 @@ fields        | 默认值["id", "title", "category"]
         "type": "article",
         "title": "Hello",
         "content": "<h1>hello world</h1>",
-        "tag": [],
+        "tags": [],
         "category": "other",
         "author": "58a5584cc70f683f47ddee69",
         "createdAt": "2017-02-16T08:35:09.169Z",
@@ -200,7 +200,7 @@ fields        | 默认值["id", "title", "category"]
         "id": "58a5643ddb4e6846b8d6afa8",
         "title": "Hello 2",
         "content": "<h1>hello world</h1>",
-        "tag": [],
+        "tags": [],
         "category": "other",
         "author": "58a5584cc70f683f47ddee69",
         "createdAt": "2017-02-16T08:35:09.169Z",
@@ -209,6 +209,46 @@ fields        | 默认值["id", "title", "category"]
 }
 ```
 
+### Search
+**GET** `/api/content/search`
+
+搜索符合条件的内容
+
+Parameter     | Explain                 
+------------- | ----------------------- 
+skip          | 默认值为0                
+imit          | 默认值5，最大100         
+fields        | 默认值["id", "type", "tags", "title", "category", "createdAt", "updatedAt"]
+includeTags   | 包含的标签，如["tag1", "tag2"]
+excludeTags   | 不包含的标签，如["tag3", "tag4"]
+category      | 内容类目
+author        | 内容作者id
+keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制，该功能目前使用正则搜索，存在潜在性能问题。
+
+
+```js
+
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "skip": 0,
+        "count": 4,
+        "contents": [{
+            "_id": "58a5453112ffc63063370aab"
+        }, {
+            "_id": "58a544fa2971f830316aa46b"
+        }, {
+            "_id": "58a543f7d8f0232fc5b84b3b"
+        }, {
+            "_id": "58a543ec4fd1732f9e687196"
+        }]
+    }
+}
+```
 
 ### Add tag
 
@@ -225,7 +265,7 @@ fields        | 默认值["id", "title", "category"]
     },
     "data": {
         "id": "58a5643ddb4e6846b8d6afa8",
-        "tag": ["test1"],
+        "tags": ["test1"],
     }
 }
 ```
@@ -246,7 +286,7 @@ fields        | 默认值["id", "title", "category"]
     },
     "data": {
         "id": "58a5643ddb4e6846b8d6afa8",
-        "tag": [],
+        "tags": [],
     }
 }
 ```
@@ -402,6 +442,3 @@ platform      | 所属平台，精确匹配
     }
 }
 ```
-
-
-

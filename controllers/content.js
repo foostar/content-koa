@@ -1,11 +1,22 @@
 const Content = require('db/mongo/content');
-const mongoose = require('mongoose')
+const htmlToText = require('html-to-text');
+const nodejieba = require("nodejieba");
+
 const _ = require ('lodash')
 
-const CONTENT_FIELDS = ["id", "type", "title", "content", "tag", "category", "author", "redactor", "createdAt", "updatedAt"]
+const CONTENT_FIELDS = ["id", "type", "title", "content", "tags", "category", "author", "redactor", "createdAt", "updatedAt"]
+
+
+function escapeRegExp(str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
 
 exports.create = async (ctx, next) => {
     const con  = _.extend({}, ctx.request.body, {author: ctx.state.user.id});
+    if (con['type'] == 'article') {
+        con['textualContent'] = nodejieba.cut(htmlToText.fromString(con['content']), true).join(' ');
+    }
     const content = new Content(con);
     const doc = await content.save();
     ctx.body = {
@@ -23,7 +34,7 @@ exports.list = async (ctx, next) => {
     if (ctx.query.limit) options.limit = Math.min(parseInt(ctx.query.limit), 100) || 5;
     if (ctx.query.skip) options.skip = parseInt(ctx.query.skip) || 0;
 
-    let returnFields = ["id", "type", "title", "category", "createdAt", "updatedAt"];
+    let returnFields = ["id", "type", "tags", "title", "category", "createdAt", "updatedAt"];
     if (ctx.query.fields) {
         const fields = _.isArray(ctx.query.fields) ? ctx.query.fields : [ctx.query.fields];
         returnFields = _.intersection(fields, CONTENT_FIELDS);
@@ -72,7 +83,12 @@ exports.update = async (ctx, next) => {
         throw Error(20403);
     }
 
-    _.assign(con, _.pick(ctx.request.body, "title", "content",  "category"))
+    let update = _.pick(ctx.request.body, "title", "content",  "category");
+    if (con['type'] == 'article' && update['content'] ) {
+        update['textualContent'] = nodejieba.cut(htmlToText.fromString(update['content']), true).join(' ');
+    }
+    _.assign(con, update);
+
     con = await con.save()
     ctx.body = {
         status: {
@@ -109,7 +125,7 @@ exports.addTag = async (ctx, next) => {
         throw Error(20403);
     }
 
-    const update = {'$set': {'redactor': ctx.state.user.id}, '$addToSet':{'tag': ctx.params.tag}};
+    const update = {'$set': {'redactor': ctx.state.user.id}, '$addToSet':{'tags': ctx.params.tag}};
     let con = await Content.findByIdAndUpdate(ctx.params.id, update, {new:true});
     if (!con){ 
         ctx.status = 404;
@@ -123,7 +139,7 @@ exports.addTag = async (ctx, next) => {
             code: 0,
             message: 'success'
         },
-        data: _.pick(con, 'id', 'tag')
+        data: _.pick(con, 'id', 'tags')
     };
 };
 
@@ -134,7 +150,7 @@ exports.removeTag = async (ctx, next) => {
         throw Error(20403);
     }
 
-    const update = {'$set': {'redactor': ctx.state.user.id}, '$pull':{'tag': ctx.params.tag}};
+    const update = {'$set': {'redactor': ctx.state.user.id}, '$pull':{'tags': ctx.params.tag}};
     let con = await Content.findByIdAndUpdate(ctx.params.id, update, {new:true});
     if (!con){ 
         ctx.status = 404;
@@ -147,6 +163,60 @@ exports.removeTag = async (ctx, next) => {
             code: 0,
             message: 'success'
         },
-        data: _.pick(con, 'id', 'tag')
+        data: _.pick(con, 'id', 'tags')
+    };
+}
+
+
+exports.search = async (ctx, next) => {
+    if (ctx.state.user.level !== 0) {
+        ctx.status = 403;
+        throw Error(20403);
+    }
+    
+    let options = {limit:5, skip:0};
+    if (ctx.query.limit) options.limit = Math.min(parseInt(ctx.query.limit), 100) || 5;
+    if (ctx.query.skip) options.skip = parseInt(ctx.query.skip) || 0;
+
+    let returnFields = ["id", "type", "tags", "title", "category", "createdAt", "updatedAt"];
+    if (ctx.query.fields) {
+        const fields = _.isArray(ctx.query.fields) ? ctx.query.fields : [ctx.query.fields];
+        returnFields = _.intersection(fields, CONTENT_FIELDS);
+    }
+
+    const condition = {};
+    if (ctx.query.includeTags) {
+        const includeTags = _.isArray(ctx.query.includeTags) ? ctx.query.includeTags : [ctx.query.includeTags];
+        condition['tags'] = {'$all': includeTags};
+
+    }
+    if (ctx.query.excludeTags) {
+        const excludeTags = _.isArray(ctx.query.excludeTags) ? ctx.query.excludeTags : [ctx.query.excludeTags];
+        if (!condition['tags']) {
+            condition['tags'] = {'$nin': excludeTags};
+        } else {
+            condition['$and'] = [{'tags': condition['tags']}, {'tags': {'$nin': excludeTags}}]
+            delete condition['tags']
+        }
+    }
+
+    if (ctx.query.category) condition['category'] = ctx.query.category;
+    if (ctx.query.author) condition['author'] = ctx.query.author;
+    if (ctx.query.keyword) condition['textualContent'] = new RegExp(escapeRegExp(ctx.query.keyword), 'im');
+
+    const count = await Content.count(condition);
+    let contents = await Content.find(condition, returnFields.join(' '), options);
+    contents = contents.map(x =>  _.pick(x, returnFields));
+
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: {
+            skip: options.skip,
+            count,
+            contents
+        }
     };
 }
