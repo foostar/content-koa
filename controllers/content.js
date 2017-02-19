@@ -1,4 +1,5 @@
 const Content = require('db/mongo/content');
+const mongoose = require('mongoose')
 const _ = require ('lodash')
 
 const CONTENT_FIELDS = ["id", "type", "title", "content", "tag", "category", "author", "redactor", "createdAt", "updatedAt"]
@@ -66,7 +67,7 @@ exports.update = async (ctx, next) => {
         throw Error(20404);
     }
 
-    if (con.author !== ctx.state.user.id && ctx.state.user.level !== 0) {
+    if (con.author.toString() !== ctx.state.user.id && ctx.state.user.level !== 0) {
         ctx.status = 403;
         throw Error(20403);
     }
@@ -81,3 +82,71 @@ exports.update = async (ctx, next) => {
         data: _.pick(con, CONTENT_FIELDS)
     };
 };
+
+var commonTags = [];
+function updateTag(latest) {
+    let m = _.pull(commonTags, latest)
+    m.unshift(latest)
+    if (m.lenght > 100) m.pop()
+    commonTags = m
+}
+
+exports.listCommonTags = async (ctx, next) => {
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: {
+            tags: commonTags.slice(0, 20)
+        }
+    };
+};
+
+exports.addTag = async (ctx, next) => {
+    if (ctx.state.user.level !== 0) {
+        ctx.status = 403;
+        throw Error(20403);
+    }
+
+    const update = {'$set': {'redactor': ctx.state.user.id}, '$addToSet':{'tag': ctx.params.tag}};
+    let con = await Content.findByIdAndUpdate(ctx.params.id, update, {new:true});
+    if (!con){ 
+        ctx.status = 404;
+        throw Error(20404);
+    }
+    
+    updateTag(ctx.params.tag)
+
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: _.pick(con, 'id', 'tag')
+    };
+};
+
+
+exports.removeTag = async (ctx, next) => {
+    if (ctx.state.user.level !== 0) {
+        ctx.status = 403;
+        throw Error(20403);
+    }
+
+    const update = {'$set': {'redactor': ctx.state.user.id}, '$pull':{'tag': ctx.params.tag}};
+    let con = await Content.findByIdAndUpdate(ctx.params.id, update, {new:true});
+    if (!con){ 
+        ctx.status = 404;
+        throw Error(20404);
+    }
+ 
+    updateTag(ctx.params.tag)
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: _.pick(con, 'id', 'tag')
+    };
+}

@@ -209,6 +209,70 @@ fields        | 默认值["id", "title", "category"]
 }
 ```
 
+
+### Add tag
+
+增加tag到内容
+
+**POST** `/api/content/:id/tag/:tag`
+
+```js
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "id": "58a5643ddb4e6846b8d6afa8",
+        "tag": ["test1"],
+    }
+}
+```
+
+### Delete tag
+
+删除指定的tag
+
+**DELETE** `/api/content/:id/tag/:tag`
+
+
+```js
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "id": "58a5643ddb4e6846b8d6afa8",
+        "tag": [],
+    }
+}
+```
+
+### List most common tags
+
+列出最近20条常用的tag
+
+**GET** `/api/content/most-common-tags`
+
+```
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "tags": ["66", "5", "17", "20", "21", "25", "35", "2", "12", "1", "10", "11", "7", "6", "4", "18", "19", "8", "9", "3"]
+    }
+}
+```
+
+
+
+
+
 ## Upstream
 
 ### Create

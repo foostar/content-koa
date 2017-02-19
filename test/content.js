@@ -1,7 +1,6 @@
 const app = require('../app').listen()
 const request = require('supertest');
 
-
 const Content = require('db/mongo/content');
 
 describe('content', function () {
@@ -70,8 +69,7 @@ describe('content', function () {
         })
     });
 
-
-     describe('update', function () {
+    describe('update', function () {
         it('should return modified content', async function () {
             return request(app)
                     .patch(`/api/content/${contentId}`)
@@ -86,5 +84,65 @@ describe('content', function () {
     });
 
 
-    // describe('show', function () {
+    describe('tag', function () {
+        it('should return content with added tags', async function () {
+            const tag = 'test1'
+            await request(app)
+                    .post(`/api/content/${contentId}/tag/${tag}`)
+                    .set('Authorization', `Bearer ${token}`)
+                    .expect(200)
+                    .expect(function(res) {
+                        if (res.body.status.code !== 0) throw new Error("code isn't 0");
+                        if (res.body.data.tag.indexOf(tag) == -1 ) throw new Error("it doesn't contain new tag");
+                    });
+
+            return request(app)
+                    .get(`/api/content/${contentId}`)
+                    .set('Authorization', `Bearer ${token}`)
+                    .expect(200)
+                    .expect(function(res) {
+                        if (res.body.data.tag.indexOf(tag) == -1 ) throw new Error("it doesn't contain new tag when re-query content");
+                    });
+        })
+
+        it('should return content that deleted the specified tag', async function () {
+            const tag = 'test2'
+            await request(app)
+                    .post(`/api/content/${contentId}/tag/${tag}`)
+                    .set('Authorization', `Bearer ${token}`)
+
+            return request(app)
+                    .del(`/api/content/${contentId}/tag/${tag}`)
+                    .set('Authorization', `Bearer ${token}`)
+                    .expect(200)
+                    .expect(function (res) {
+                        if (res.body.status.code !== 0) throw new Error("code isn't 0");
+                        if (res.body.data.tag.indexOf(tag) != -1 ) throw new Error("it does contain the deleted tag");
+                    });
+        })
+
+        it('should return most common tags', async function () {
+            let r = []
+            for (var i = 0; i <= 50; i++) {
+                let tag = 1;
+                while(Math.random() < 0.9){
+                    tag++;
+                }
+                r.push(request(app).post(`/api/content/${contentId}/tag/${tag}`).set('Authorization', `Bearer ${token}`));
+            }
+            await Promise.all(r);
+
+            return request(app)
+                    .get(`/api/content/most-common-tags`)
+                    .set('Authorization', `Bearer ${token}`)
+                    .expect(200)
+                    .expect(function (res) {
+                        if (res.body.status.code !== 0) throw new Error("code isn't 0");
+                        if (res.body.data.tags.indexOf('1') == -1) throw new Error("it doesn't contain the most frequently-used item");
+                        if (res.body.data.tags.indexOf('2') == -1) throw new Error("it doesn't contain the second frequently-used item");
+                        if (res.body.data.tags.indexOf('3') == -1) throw new Error("it doesn't contain the third frequently-used item");
+                    });
+        })
+    });
+
 });
