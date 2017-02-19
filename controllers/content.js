@@ -173,7 +173,7 @@ exports.search = async (ctx, next) => {
         ctx.status = 403;
         throw Error(20403);
     }
-    
+
     let options = {limit:5, skip:0};
     if (ctx.query.limit) options.limit = Math.min(parseInt(ctx.query.limit), 100) || 5;
     if (ctx.query.skip) options.skip = parseInt(ctx.query.skip) || 0;
@@ -202,7 +202,7 @@ exports.search = async (ctx, next) => {
 
     if (ctx.query.category) condition['category'] = ctx.query.category;
     if (ctx.query.author) condition['author'] = ctx.query.author;
-    if (ctx.query.keyword) condition['textualContent'] = new RegExp(escapeRegExp(ctx.query.keyword), 'im');
+    if (ctx.query.keyword) condition['textualContent'] = new RegExp(escapeRegExp(nodejieba.cut(ctx.query.keyword, true).join(' ')), 'im');
 
     const count = await Content.count(condition);
     let contents = await Content.find(condition, returnFields.join(' '), options);
