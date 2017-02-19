@@ -151,7 +151,7 @@ describe('content', function () {
         before(async function () {
             let r = [];
             for (var i = 1; i <= 5; i++) {
-                let con = {title: 'Hello', type: 'article' ,content: '<h1>hello world</h1>', tags:[`t${i}`, `t${i+1}`, `t${i+2}`,`t${i+3}`] , category:'other'}
+                let con = {title: 'Hello', type: 'article' ,content: `<h1>hello world token${i} </h1>`, tags:[`t${i}`, `t${i+1}`, `t${i+2}`,`t${i+3}`] , category:'other'}
                 r.push(request(app).post('/api/content').set('Authorization', `Bearer ${token}`).send(con));
             }
             await Promise.all(r);
@@ -162,8 +162,9 @@ describe('content', function () {
                     .get('/api/content/search')
                     .query({
                         includeTags:['t3','t4'], 
-                        excludeTags:['t5','t6'],
-                        fields:['id', 'tags']
+                        excludeTags:['t6'],
+                        fields:['id', 'tags', 'content'],
+                        keyword: 'token1'
                     })
                     .set('Authorization', `Bearer ${token}`)
                     .expect(200)
@@ -173,7 +174,4 @@ describe('content', function () {
                     });
         });
     });
-
-
-
 });
