@@ -7,12 +7,6 @@ const ERROR = {
             message: '密码错误'
         }
     },
-    '10403': {
-        status: {
-            code: 10403,
-            message: '没有权限'
-        }
-    },
     '10404': {
         status: {
             code: 10404,
@@ -23,6 +17,24 @@ const ERROR = {
         status: {
             code: 10422,
             message: '用户已存在'
+        }
+    },
+    '11400': {
+        status: {
+            code: 11400,
+            message: '参数不全'
+        }
+    },
+    '11401': {
+        status: {
+            code: 11401,
+            message: '操作权限不够'
+        }
+    },
+    '11422': {
+        status: {
+            code: 11422,
+            message: '用户名已存在'
         }
     },
     '20404': {

@@ -18,7 +18,7 @@ describe('user', function () {
             let res = await request(app)
                     .post('/api/users')
                     .set('Authorization', `Bearer ${token}`)
-                    .send({'username': 'test_xxx', 'password': '123456', 'level': 0})
+                    .send({'username': 'test_xxx', 'password': '123456', 'level': 1})
                     .expect(200);
             return User.remove({_id: res.body.data.id}).exec();
         });

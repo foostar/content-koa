@@ -106,20 +106,24 @@ exports.show = async (ctx, next) => {
     };
 };
 
-exports.create = async (ctx) => {
-    if (ctx.state.user.level !== 2 && ctx.state.user.level !== 0) {
-        ctx.status = 403;
-        throw Error(10403);
+exports.create = async (ctx, next) => {
+    const operator = ctx.state.user;
+    const {username, password, level} = ctx.request.body;
+
+    if (!username || !password || !level) { // !0 -> true
+        throw Error(11400);
     }
 
-    const user = new User(ctx.request.body);
-
-    if (ctx.state.user.level === 1 || (ctx.state.user.level === 2 && user.level === 0)) {
-        ctx.status = 403;
-        throw Error(10403);
+    if (operator.level !== 0 && operator.level <= level) {
+        throw Error(11401);
     }
 
-    await user.save();
+    if (await User.findOne({username})) {
+        throw Error(11422);
+    }
+
+    const user = await new User({username, password, level}).save();
+
     ctx.body = {
         status: {
             code: 0,
@@ -158,7 +162,7 @@ exports.changePassword = async (ctx, next) => {
 exports.update = async (ctx) => {
     if (ctx.state.user.level === 1) {
         ctx.status = 403;
-        throw Error(10403);
+        throw Error(11401);
     }
 
     const user = await User.findById(ctx.params.id);
@@ -171,7 +175,7 @@ exports.update = async (ctx) => {
 
     if (update.level === 0 && ctx.state.user.level !== 0) {
         ctx.status = 403;
-        throw Error(10403);
+        throw Error(11401);
     }
 
     _.assign(user, update);
