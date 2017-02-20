@@ -3,5 +3,11 @@
     "rules": {
         "indent": ["error", 4],
         "semi": ["error", "always"]
+    },
+    "globals": {
+        "before": true,
+        "after": true,
+        "it": true,
+        "describe": true
     }
 }
