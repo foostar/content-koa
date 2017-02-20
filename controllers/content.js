@@ -78,7 +78,7 @@ exports.update = async (ctx, next) => {
         throw Error(20404);
     }
 
-    if (con.author.toString() !== ctx.state.user.id && ctx.state.user.level !== 0) {
+    if (con.author.toString() !== ctx.state.user.id && ctx.state.user.level == 1) {
         ctx.status = 403;
         throw Error(20403);
     }
@@ -120,7 +120,7 @@ exports.listCommonTags = async (ctx, next) => {
 };
 
 exports.addTag = async (ctx, next) => {
-    if (ctx.state.user.level !== 0) {
+    if (ctx.state.user.level !== 2 && ctx.state.user.level !==0) {
         ctx.status = 403;
         throw Error(20403);
     }
@@ -145,7 +145,7 @@ exports.addTag = async (ctx, next) => {
 
 
 exports.removeTag = async (ctx, next) => {
-    if (ctx.state.user.level !== 0) {
+    if (ctx.state.user.level !== 2 && ctx.state.user.level !== 0) {
         ctx.status = 403;
         throw Error(20403);
     }
@@ -169,7 +169,7 @@ exports.removeTag = async (ctx, next) => {
 
 
 exports.search = async (ctx, next) => {
-    if (ctx.state.user.level !== 0) {
+    if (ctx.state.user.level !== 2 && ctx.state.user.level !== 0) {
         ctx.status = 403;
         throw Error(20403);
     }
