@@ -70,11 +70,11 @@ describe('upstream', function () {
             return request(app)
                     .patch(`/api/upstream/${upstreamId}`)
                     .set('Authorization', `Bearer ${token}`)
-                    .send({session:'modified'})
+                    .send({session:['modified']})
                     .expect(200)
                     .expect(function(res) {
                         if (res.body.status.code !== 0) throw new Error("code isn't 0");
-                        if (res.body.data.session !== 'modified') throw new Error("session isn't modified");
+                        if (res.body.data.session[0] !== 'modified') throw new Error("session isn't modified");
                     });
         })
     });
