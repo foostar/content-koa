@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const hash = require('utils/hash');
 const User = require('db/mongo/user');
-const _ = require('lodash')
+const _ = require('lodash');
 
 function getToken (user, opt = {}) {
     if (!opt.expiresIn) {
@@ -14,6 +14,8 @@ function getToken (user, opt = {}) {
         opt
     );
 }
+
+const RETURN_FIELDS = ['id', 'username', 'level', 'createdAt', 'updatedAt'];
 
 exports.checkPassword = async (ctx, next) => {
     const {username, password} = ctx.request.body;
@@ -71,16 +73,26 @@ exports.signup = async (ctx, next) => {
     };
 };
 
+exports.list = async (ctx, next) => {
+    let {limit = 20, skip = 0} = ctx.query;
+    limit = Math.max(Math.min(limit, 100), 20);
+    const users = await User.find(
+        {level: { $gt: 0 }},
+        null,
+        {skip, limit}
+    );
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: users.map(user => _.pick(user, RETURN_FIELDS))
+    };
+};
+
 exports.show = async (ctx, next) => {
     const {id} = ctx.params;
-    const user = await User.findOne({id}, {
-        username: true,
-        level: true,
-        _id: false,
-        id: true,
-        createdAt: true,
-        updatedAt: true
-    });
+    const user = await User.findOne({id});
     if (!user) {
         ctx.status = 404;
         throw Error(10404);
@@ -90,7 +102,7 @@ exports.show = async (ctx, next) => {
             code: 0,
             message: 'success'
         },
-        data: _.omit(user, 'password')
+        data: _.pick(user, RETURN_FIELDS)
     };
 };
 

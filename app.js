@@ -25,4 +25,4 @@ app.use(bodyParser());
 
 app.use(mountRoutes().routes());
 
-module.exports = app
+module.exports = app;

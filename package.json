@@ -2,6 +2,7 @@
   "name": "calc-server",
   "version": "0.0.1",
   "scripts": {
+    "lint": "eslint .",
     "dev": "nodemon -q --harmony index.js",
     "test": "mocha --harmony"
   },
@@ -30,6 +31,7 @@
     "supertest": "^3.0.0"
   },
   "pre-commit": [
+    "lint",
     "test"
   ]
 }
