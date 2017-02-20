@@ -106,6 +106,33 @@ exports.show = async (ctx, next) => {
     };
 };
 
+exports.create = async (ctx, next) => {
+    const operator = ctx.state.user;
+    const {username, password, level} = ctx.request.body;
+
+    if (!username || !password || !level) { // !0 -> true
+        throw Error(11400);
+    }
+
+    if (operator.level !== 0 && operator.level <= level) {
+        throw Error(11401);
+    }
+
+    if (await User.findOne({username})) {
+        throw Error(11422);
+    }
+
+    const user = await new User({username, password, level}).save();
+
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: _.pick(user, ['id', 'username'])
+    };
+};
+
 // 修改密码
 exports.update = async (ctx, next) => {
     await next();

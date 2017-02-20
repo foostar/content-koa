@@ -19,6 +19,24 @@ const ERROR = {
             message: '用户已存在'
         }
     },
+    '11400': {
+        status: {
+            code: 11400,
+            message: '参数不全'
+        }
+    },
+    '11401': {
+        status: {
+            code: 11401,
+            message: '操作权限不够'
+        }
+    },
+    '11422': {
+        status: {
+            code: 11422,
+            message: '用户名已存在'
+        }
+    },
     '20404': {
         status: {
             code: 20404,

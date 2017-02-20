@@ -29,11 +29,13 @@
 ```
 
 ## Error Code
-
 - `10***` 用户类
     - `10404`: 用户不存在
     - `10401`: 用户密码错误
     - `10422`: 用户名已经被注册
+- `11***` 创建用户
+    - `11401`: level 不够
+    - `11422`: 用户已存在
 - `20***` 文章类
     - `20404`: 文章不存在
     - `20403`: 没有修改此文章的权限
@@ -101,20 +103,20 @@
 ```js
 //req
 {
-    "title": "Hello", 
+    "title": "Hello",
     "type": "article", //or "video"
-    "content": "<h1>hello world</h1>", 
+    "content": "<h1>hello world</h1>",
     "category":"other"
 }
 
 //res
-{ 
-    "status": { 
+{
+    "status": {
         "code": 0, "message": "success"
     },
-    "data": { 
+    "data": {
         "id": "58a52c20bca39b273ea253f8"
-    } 
+    }
 }
 
 ```
@@ -124,10 +126,10 @@
 
 返回所有当前帐号创作的文章，以创作时间排序。
 
-Parameter     | Explain                 
-------------- | ----------------------- 
-skip          | 默认值为0                
-imit          | 默认值5，最大100         
+Parameter     | Explain
+------------- | -----------------------
+skip          | 默认值为0
+imit          | 默认值5，最大100
 fields        | 默认值["id", "type", "tags", "title", "category", "createdAt", "updatedAt"]
 
 ```js
@@ -154,7 +156,7 @@ fields        | 默认值["id", "type", "tags", "title", "category", "createdAt"
 }
 ```
 
-### Show 
+### Show
 **GET** `/api/content/:id`
 
 通过id获得内容
@@ -214,10 +216,10 @@ fields        | 默认值["id", "type", "tags", "title", "category", "createdAt"
 
 搜索符合条件的内容
 
-Parameter     | Explain                 
-------------- | ----------------------- 
-skip          | 默认值为0                
-imit          | 默认值5，最大100         
+Parameter     | Explain
+------------- | -----------------------
+skip          | 默认值为0
+imit          | 默认值5，最大100
 fields        | 默认值["id", "type", "tags", "title", "category", "createdAt", "updatedAt"]
 includeTags   | 包含的标签，如["tag1", "tag2"]
 excludeTags   | 不包含的标签，如["tag3", "tag4"]
@@ -324,14 +326,14 @@ keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制
 {"platform": "tencent", "account": "123456@qq.com", session: "a=1;b=2"}
 
 //res
-{ 
-    "status": { 
-        "code": 0, 
-        "message": "success" 
+{
+    "status": {
+        "code": 0,
+        "message": "success"
     },
-    "data": { 
-        "id": "616439363565363166383763" 
-    } 
+    "data": {
+        "id": "616439363565363166383763"
+    }
 }
 ```
 
@@ -340,10 +342,10 @@ keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制
 
 ```js
 //res
-{ 
-    "status": { 
-        "code": 0, 
-        "message": "success" 
+{
+    "status": {
+        "code": 0,
+        "message": "success"
     },
     "data": {}
 }
@@ -352,7 +354,7 @@ keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制
 ### Show
 **GET** `/api/upstream/:id`
 
-```js 
+```js
 //res
 {
     "status": {
@@ -402,11 +404,11 @@ keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制
 ### List
 列出符合条件的上游帐号。
 
-Parameter     | Explain                 
-------------- | ----------------------- 
-skip          | 默认值为0                
-imit          | 默认值5，最大100         
-account       | 按前缀匹配方式查找，返回以此参数开头的帐号             
+Parameter     | Explain
+------------- | -----------------------
+skip          | 默认值为0
+imit          | 默认值5，最大100
+account       | 按前缀匹配方式查找，返回以此参数开头的帐号
 platform      | 所属平台，精确匹配
 
 
