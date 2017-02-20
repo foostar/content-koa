@@ -18,7 +18,8 @@ const user = mongoose.Schema({
         // 2: redactor
         type: Number,
         default: 1
-    }
+    },
+    bindUpstreams: Array
 }, {
     timestamps: true
 });

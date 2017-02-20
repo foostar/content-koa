@@ -15,7 +15,7 @@ function getToken (user, opt = {}) {
     );
 }
 
-const RETURN_FIELDS = ['id', 'username', 'level', 'createdAt', 'updatedAt'];
+const RETURN_FIELDS = ['id', 'username', 'bindUpstreams', 'level', 'createdAt', 'updatedAt'];
 
 exports.checkPassword = async (ctx, next) => {
     const {username, password} = ctx.request.body;
@@ -52,26 +52,26 @@ exports.signin = async (ctx, next) => {
     };
 };
 
-exports.signup = async (ctx, next) => {
-    const {username, password} = ctx.request.body;
-    if (await User.findOne({username})) {
-        ctx.status = 422;
-        throw Error(10422);
-    }
-    const user = await new User({username, password}).save();
-    const token = getToken(_.pick(user, 'id', 'username', 'level'));
-    ctx.body = {
-        status: {
-            code: 0,
-            message: 'success'
-        },
-        data: {
-            username,
-            id: user.id,
-            token
-        }
-    };
-};
+// exports.signup = async (ctx, next) => {
+//     const {username, password} = ctx.request.body;
+//     if (await User.findOne({username})) {
+//         ctx.status = 422;
+//         throw Error(10422);
+//     }
+//     const user = await new User({username, password}).save();
+//     const token = getToken(_.pick(user, 'id', 'username', 'level'));
+//     ctx.body = {
+//         status: {
+//             code: 0,
+//             message: 'success'
+//         },
+//         data: {
+//             username,
+//             id: user.id,
+//             token
+//         }
+//     };
+// };
 
 exports.list = async (ctx, next) => {
     let {limit = 20, skip = 0} = ctx.query;
@@ -106,8 +106,31 @@ exports.show = async (ctx, next) => {
     };
 };
 
+exports.create = async (ctx) => {
+    if (ctx.state.user.level !== 2 && ctx.state.user.level !== 0) {
+        ctx.status = 403;
+        throw Error(10403);
+    }
+
+    const user = new User(ctx.request.body);
+
+    if (ctx.state.user.level === 1 || (ctx.state.user.level === 2 && user.level === 0)) {
+        ctx.status = 403;
+        throw Error(10403);
+    }
+
+    await user.save();
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: _.pick(user, RETURN_FIELDS)
+    };
+};
+
 // 修改密码
-exports.update = async (ctx, next) => {
+exports.changePassword = async (ctx, next) => {
     await next();
 
     const {username, newPassword} = ctx.query;
@@ -129,6 +152,38 @@ exports.update = async (ctx, next) => {
             id: user.id,
             token
         }
+    };
+};
+
+exports.update = async (ctx) => {
+    if (ctx.state.user.level === 1) {
+        ctx.status = 403;
+        throw Error(10403);
+    }
+
+    const user = await User.findById(ctx.params.id);
+    if (!user) {
+        ctx.status = 404;
+        throw Error(10404);
+    }
+
+    let update = _.pick(ctx.request.body, 'bindUpstreams', 'level', 'password');
+
+    if (update.level === 0 && ctx.state.user.level !== 0) {
+        ctx.status = 403;
+        throw Error(10403);
+    }
+
+    _.assign(user, update);
+
+    await user.save();
+
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: _.pick(user, RETURN_FIELDS)
     };
 };
 

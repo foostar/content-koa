@@ -34,6 +34,7 @@
     - `10404`: 用户不存在
     - `10401`: 用户密码错误
     - `10422`: 用户名已经被注册
+    - `10403`: 没有权限
 - `20***` 文章类
     - `20404`: 文章不存在
     - `20403`: 没有修改此文章的权限
@@ -50,8 +51,6 @@
 ┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 ┃ /api/signin    ┃  {workspaceRoot}/api/signin.js    ┃
 ┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-┃ /api/signup    ┃  {workspaceRoot}/api/signup.js    ┃
-┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 ┃ /api/user      ┃  {workspaceRoot}/api/user.js      ┃
 ┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 ┃ /              ┃  {workspaceRoot}/index.js         ┃
@@ -61,7 +60,6 @@
 
 # JSON Web Token
 ```JSON
-"url": "/api/signup"
 "url": "/api/signin"
 
 "method": "POST"
@@ -92,6 +90,70 @@
 
 
 # API
+
+## User
+
+### Create
+
+**POST** `/api/users`
+
+```js
+//req
+{"username": "account", "password": "123456", "level": 1}
+
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "id": "58aaf9218840e8723c5c7812",
+        "username": "account",
+        "bindUpstreams": [],
+        "level": 1,
+        "createdAt": "2017-02-20T14:11:45.294Z",
+        "updatedAt": "2017-02-20T14:11:45.294Z"
+    }
+}
+```
+
+### Update
+**PATCH** `/api/users/:id`
+
+```js
+//req
+{"bindUpstreams": ["xxx"]}
+
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "id": "58aafa7fb072f872ce7a56c8",
+        "username": "test",
+        "bindUpstreams": ["xxx"],
+        "level": 0,
+        "createdAt": "2017-02-20T14:17:35.888Z",
+        "updatedAt": "2017-02-20T14:17:37.434Z"
+    }
+}
+
+```
+
+### List
+**GET** `/api/users`
+
+### Show
+**GET** `/api/users/:id`
+
+### Change password
+**PATCH** `/api/users/:id/password`
+
+
+
 
 ## Content
 

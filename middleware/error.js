@@ -7,6 +7,12 @@ const ERROR = {
             message: '密码错误'
         }
     },
+    '10403': {
+        status: {
+            code: 10403,
+            message: '没有权限'
+        }
+    },
     '10404': {
         status: {
             code: 10404,
