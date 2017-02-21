@@ -108,7 +108,7 @@ exports.show = async (ctx, next) => {
 
 exports.create = async (ctx, next) => {
     const operator = ctx.state.user;
-    const {username, password, level} = ctx.request.body;
+    const {username, password, level, bindUpstreams} = ctx.request.body;
 
     if (!username || !password || !level) { // !0 -> true
         throw Error(11400);
@@ -122,7 +122,9 @@ exports.create = async (ctx, next) => {
         throw Error(11422);
     }
 
-    const user = await new User({username, password, level}).save();
+    const user = await new User({
+        username, password, level, bindUpstreams
+    }).save();
 
     ctx.body = {
         status: {
