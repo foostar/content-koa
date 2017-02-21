@@ -29,11 +29,11 @@ describe('user', function () {
             return request(app)
                     .patch(`/api/users/${id}`)
                     .set('Authorization', `Bearer ${token}`)
-                    .send({'bindUpstreams': ['xxx']})
+                    .send({'bindUpstreams': ['313261643638353238313234']})
                     .expect(200)
                     .expect(function (res) {
                         if (res.body.status.code !== 0) throw new Error("code isn't 0");
-                        if (res.body.data.bindUpstreams[0] !== 'xxx') {
+                        if (res.body.data.bindUpstreams[0] !== '313261643638353238313234') {
                             throw new Error("result isn't modified");
                         }
                     });
