@@ -26,7 +26,6 @@ exports.checkPassword = async (ctx, next) => {
     }
 
     if (hash(password) !== user.password) {
-        ctx.status = 401;
         throw Error(10401);
     }
     next();
