@@ -1,5 +1,6 @@
 const hash = require('utils/hash');
 const mongoose = require('mongoose');
+const {ObjectId} = mongoose.SchemaTypes;
 
 const user = mongoose.Schema({
     username: {
@@ -19,7 +20,7 @@ const user = mongoose.Schema({
         type: Number,
         default: 1
     },
-    bindUpstreams: Array
+    bindUpstreams: [ObjectId]
 }, {
     timestamps: true
 });
