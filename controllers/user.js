@@ -111,14 +111,17 @@ exports.create = async (ctx, next) => {
     const {username, password, level, bindUpstreams} = ctx.request.body;
 
     if (!username || !password || !level) { // !0 -> true
+        ctx.status = 400;
         throw Error(11400);
     }
 
     if (operator.level !== 0 && operator.level <= level) {
+        ctx.status = 403;
         throw Error(11401);
     }
 
     if (await User.findOne({username})) {
+        ctx.status = 422;
         throw Error(11422);
     }
 
