@@ -169,11 +169,11 @@ exports.search = async (ctx, next) => {
         throw Error(20403);
     }
 
-    let options = {limit: 5, skip: 0};
+    let options = {limit: 5, skip: 0, populate: 'author'};
     if (ctx.query.limit) options.limit = Math.min(parseInt(ctx.query.limit), 100) || 5;
     if (ctx.query.skip) options.skip = parseInt(ctx.query.skip) || 0;
 
-    let returnFields = ['id', 'type', 'tags', 'title', 'category', 'createdAt', 'updatedAt'];
+    let returnFields = ['id', 'type', 'author', 'tags', 'title', 'category', 'createdAt', 'updatedAt'];
     if (ctx.query.fields) {
         const fields = _.isArray(ctx.query.fields) ? ctx.query.fields : [ctx.query.fields];
         returnFields = _.intersection(fields, CONTENT_FIELDS);
