@@ -33,14 +33,19 @@ exports.list = async (ctx, next) => {
 };
 
 exports.create = async (ctx, next) => {
-    let ups = await Upstream.findOne(_.pick(ctx.request.body, 'platform', 'account'));
+    const {platform, account, password, cookies} = ctx.request.body;
+    let ups = await Upstream.findOne({account, platform});
+
     if (ups) {
-        ctx.status = 422;
-        throw Error(30422);
+        ups.cookies = cookies;
+        ups.password = password;
+        await ups.save();
+    } else {
+        ups = new Upstream(ctx.request.body);
+        ups.creater = ctx.state.user.id;
+        await ups.save();
     }
-    ups = new Upstream(ctx.request.body);
-    ups.creater = ctx.state.user.id;
-    await ups.save();
+
     ctx.body = {
         status: {
             code: 0,

@@ -5,6 +5,7 @@ const {ObjectId} = mongoose.SchemaTypes;
 const schema = mongoose.Schema({
     platform: {type: String, required: true},
     account: {type: String, required: true},
+    password: String,
     session: Array,
     creater: ObjectId
 }, {

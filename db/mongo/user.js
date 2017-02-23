@@ -20,7 +20,10 @@ const user = mongoose.Schema({
         type: Number,
         default: 1
     },
-    bindUpstreams: [ObjectId]
+    bindUpstreams: [{
+        type: ObjectId,
+        ref: 'upstream'
+    }]
 }, {
     timestamps: true
 });

@@ -46,6 +46,7 @@ exports.signin = async (ctx, next) => {
         data: {
             username,
             id: user.id,
+            level: user.level,
             token
         }
     };

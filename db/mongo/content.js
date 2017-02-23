@@ -8,7 +8,10 @@ const content = mongoose.Schema({
     textualContent: {type: String, required: true},
     tags: {type: [String], default: []},
     category: {type: String, required: true},
-    author: {type: ObjectId},
+    author: {
+        type: ObjectId,
+        ref: 'user'
+    },
     redactor: ObjectId
 }, {
     timestamps: true

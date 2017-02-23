@@ -67,14 +67,23 @@ module.exports = () => async (ctx, next) => {
     try {
         await next();
     } catch (err) {
-        ctx.status = ctx.status || 500;
-
-        ctx.body = ERROR[err.message] || merge({
-            status: {
-                code: 10500,
-                message: err.message || 'unknow error'
-            }
-        }, ctx.body);
+        if (err.status === 401) {
+            ctx.status = 401;
+            ctx.body = {
+                status: {
+                    code: 99401,
+                    message: '认证信息失效, 请重新登录'
+                }
+            };
+        } else {
+            ctx.status = ctx.status || 500;
+            ctx.body = ERROR[err.message] || merge({
+                status: {
+                    code: 99500,
+                    message: err.message || 'unknow error'
+                }
+            }, ctx.body);
+        }
     }
 };
 
