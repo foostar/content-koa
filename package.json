@@ -2,6 +2,7 @@
   "name": "calc-server",
   "version": "0.0.1",
   "scripts": {
+    "start": "NODE_ENV=production node --harmony index.js",
     "lint": "eslint .",
     "dev": "nodemon -q --harmony index.js",
     "test": "mocha --harmony"
