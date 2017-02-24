@@ -4,7 +4,7 @@ const request = require('supertest');
 const Content = require('db/mongo/content');
 
 describe('content', function () {
-    let testContent = {title: 'Hello', type: 'article', content: '<h1>hello world</h1>', category: 'other'};
+    let testContent = {title: 'Hello', type: 'article', content: '<h1>hello world</h1>', category: '搞笑'};
     let token, accountId, contentId;
     before(async function () {
         let res = await request(app)
@@ -150,7 +150,13 @@ describe('content', function () {
         before(async function () {
             let r = [];
             for (var i = 1; i <= 5; i++) {
-                let con = {title: 'Hello', type: 'article', content: `<h1>hello world token${i} </h1>`, tags: [`t${i}`, `t${i + 1}`, `t${i + 2}`, `t${i + 3}`], category: 'other'};
+                let con = {
+                    title: 'Hello',
+                    type: 'article',
+                    content: `<h1>hello world token${i} </h1>`,
+                    tags: [`t${i}`, `t${i + 1}`, `t${i + 2}`, `t${i + 3}`],
+                    category: '搞笑'
+                };
                 r.push(request(app).post('/api/content').set('Authorization', `Bearer ${token}`).send(con));
             }
             await Promise.all(r);
