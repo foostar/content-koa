@@ -1,4 +1,5 @@
-module.exports = process.env.NODE_ENV === 'production'
+const config = process.env.NODE_ENV === 'production'
     ? require('./prod')
     : require('./dev');
 
+module.exports = config;
