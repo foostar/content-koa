@@ -60,6 +60,12 @@ const ERROR = {
             code: 30422,
             message: '重复的平台帐号'
         }
+    },
+    '40404': {
+        status: {
+            code: 40404,
+            message: '找不到该上游副本'
+        }
     }
 };
 
@@ -76,6 +82,9 @@ module.exports = () => async (ctx, next) => {
                 }
             };
         } else {
+            if (process.env.NODE_ENV !== 'production' && !ERROR[err.message]) {
+                console.error(err.message, '\n', err.stack);
+            }
             ctx.status = ctx.status || 500;
             ctx.body = ERROR[err.message] || merge({
                 status: {

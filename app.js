@@ -13,7 +13,15 @@ const jwt = require('middleware/jwt');
 const mountRoutes = require('utils/mount-routes');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(config.MONGO_DB);
+const options = {
+    server: {
+        socketOptions: {keepAlive: 1}
+    },
+    replset: {
+        socketOptions: {keepAlive: 1}
+    }
+};
+mongoose.connect(config.MONGO_DB, options);
 
 const app = new Koa();
 

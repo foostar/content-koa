@@ -15,9 +15,9 @@ before(async function () {
     }
 });
 
-after(async function () {
-    await user.remove();
-});
+// after(async function () {
+//     await user.remove();
+// });
 
 describe('base', function () {
     describe('home page', function () {

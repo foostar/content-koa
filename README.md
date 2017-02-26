@@ -40,9 +40,11 @@
     - `20404`: 文章不存在
     - `20403`: 没有修改此文章的权限
 - `30***` 上游帐号类
-    - `20404`: 上游帐号不存在
-    - `20422`: 重复的平台帐号
+    - `30404`: 上游帐号不存在
+    - `30422`: 重复的平台帐号
 
+- `40***` 上游副本类
+    - `40404`: 不存在的上游副本
 
 ## Routes 目录结构决定路由结构
 
@@ -503,5 +505,159 @@ platform      | 所属平台，精确匹配
             "updatedAt": "2017-02-16T18:35:18.040Z"
         }]
     }
+}
+```
+
+
+## Reproduction
+
+### Upsert
+
+保存或更新上游副本
+
+**POST** `/api/reproduction/:id`
+
+```js
+//req /api/reproduction/majihua.baijia.baidu.com%2Farticle%2F783077
+{
+    "upstream":"000000000000000000000000",
+    "content":"000000000000000000000000",
+    "publishAt":"2017-02-26T14:24:54.331Z",
+    "custom":"test"
+}
+
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "id": "majihua.baijia.baidu.com/article/783077",
+        "upstream": "000000000000000000000000",
+        "content": "000000000000000000000000",
+        "publishAt": "2017-02-26T14:16:14.561Z",
+        "view": 0,
+        "custom": "test",
+        "createdAt": "2017-02-26T14:16:14.569Z",
+        "updatedAt": "2017-02-26T14:16:14.569Z"
+    }
+}
+```
+
+### Show
+
+**GET** `/api/reproduction/:id`
+
+```js
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "id": "majihua.baijia.baidu.com/article/783077",
+        "upstream": "000000000000000000000000",
+        "content": "000000000000000000000000",
+        "publishAt": "2017-02-26T14:16:14.561Z",
+        "view": 0,
+        "custom": "test",
+        "createdAt": "2017-02-26T14:16:14.569Z",
+        "updatedAt": "2017-02-26T14:16:14.569Z"
+    }
+}
+```
+
+### Search
+
+返回符合条件的上游副本，以更新时间倒序排列
+
+**GET** `/api/reproduction`
+
+Parameter     | Explain
+------------- | -----------------------
+skip          | 默认值为0
+limit         | 默认值5，最大100
+publishStart  | 副本发布时间范围，下界
+publishEnd    | 副本发布时间范围，上界
+upstreams     | 上游ID，可传多个值
+contents      | 内容ID，可传多个值
+
+```js
+//req ?upstreams=111111111111111111111111
+
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": {
+        "skip": 0,
+        "count": 1,
+        "reproductions": [{
+            "id": "111111111111111111111119",
+            "upstream": "111111111111111111111111",
+            "content": "111111111111111111111110",
+            "publishAt": "2017-02-26T13:37:21.262Z",
+            "view": 9,
+            "custom": "test",
+            "createdAt": "2017-02-26T13:37:21.263Z",
+            "updatedAt": "2017-02-26T13:37:21.263Z"
+        }]
+    }
+}
+```
+
+
+### Stat
+
+统计符合条件的view数
+
+Parameter     | Explain
+------------- | -----------------------
+publishStart  | 副本发布时间范围，下界
+publishEnd    | 副本发布时间范围，上界
+upstreams     | 上游ID，可传多个值
+contents      | 内容ID，可传多个值
+groupBy       | 以何字段分组统计，目前仅支持"upstream" or "content"，如果没有传递该参数结果不分组
+
+**GET** `/api/reproduction/stat`
+
+```js
+//req /api/reproduction/stat?groupBy=upstream
+
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data": [{
+        "total": 20,
+        "lastUpdate": "2017-02-26T13:59:47.269Z",
+        "upstream": "111111111111111111111110"
+    }, {
+        "total": 25,
+        "lastUpdate": "2017-02-26T13:59:47.270Z",
+        "upstream": "111111111111111111111111"
+    }]
+}
+```
+
+```js
+//req /api/reproduction/stat
+
+//res
+{
+    "status": {
+        "code": 0,
+        "message": "success"
+    },
+    "data":[{
+        "total": 45,
+        "lastUpdate": "2017-02-26T13:59:47.269Z"
+    }]
 }
 ```
