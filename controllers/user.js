@@ -6,7 +6,7 @@ const _ = require('lodash');
 
 function getToken (user, opt = {}) {
     if (!opt.expiresIn) {
-        opt.expiresIn = '1d';
+        opt.expiresIn = '7d';
     }
     return jwt.sign(
         user,
