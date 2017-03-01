@@ -28,7 +28,7 @@ exports.checkPassword = async (ctx, next) => {
     if (hash(password) !== user.password) {
         throw Error(10401);
     }
-    next();
+    await next();
 };
 
 exports.signin = async (ctx, next) => {
@@ -140,9 +140,7 @@ exports.create = async (ctx, next) => {
 
 // 修改密码
 exports.changePassword = async (ctx, next) => {
-    await next();
-
-    const {username, newPassword} = ctx.query;
+    const {username, newPassword} = ctx.request.body;
     const user = await User.findOne({username});
 
     user.password = newPassword;
@@ -151,6 +149,13 @@ exports.changePassword = async (ctx, next) => {
 
     const token = getToken(_.pick(user, 'id', 'username', 'level'));
 
+    console.log(user);
+    await new Promise((resolve) => {
+        setTimeout(() => {
+            resolve();
+            console.log('resolve');
+        }, 3000);
+    });
     ctx.body = {
         status: {
             code: 0,

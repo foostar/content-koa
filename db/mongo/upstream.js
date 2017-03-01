@@ -6,6 +6,8 @@ const schema = mongoose.Schema({
     platform: {type: String, required: true},
     account: {type: String, required: true},
     password: String,
+    nickname: String,
+    custom: String,
     session: Array,
     creater: ObjectId
 }, {

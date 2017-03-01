@@ -12,7 +12,7 @@ describe('content', function () {
                 .send({username: 'test', password: '123456'});
         token = res.body.data.token;
         accountId = res.body.data.id;
-        res = await request(app).post('/api/content').set('Authorization', `Bearer ${token}`).send(testContent);
+        res = await request(app).post('/api/contents').set('Authorization', `Bearer ${token}`).send(testContent);
         contentId = res.body.data.id;
     });
 
@@ -24,7 +24,7 @@ describe('content', function () {
         it('should return 200', async function () {
             // const res =
             await request(app)
-                    .post('/api/content')
+                    .post('/api/contents')
                     .set('Authorization', `Bearer ${token}`)
                     .send(testContent)
                     .expect(200);
@@ -34,7 +34,7 @@ describe('content', function () {
     describe('list', function () {
         it('should return contents belong to account', async function () {
             return request(app)
-                    .get('/api/content')
+                    .get('/api/contents')
                     .query({skip: 1, limit: 1, fields: ['id', 'author']})
                     .set('Authorization', `Bearer ${token}`)
                     .expect(200)
@@ -49,7 +49,7 @@ describe('content', function () {
     describe('show', function () {
         it('should return matched content', async function () {
             return request(app)
-                    .get(`/api/content/${contentId}`)
+                    .get(`/api/contents/${contentId}`)
                     .set('Authorization', `Bearer ${token}`)
                     .expect(200)
                     .expect(function (res) {
@@ -59,7 +59,7 @@ describe('content', function () {
         });
         it('should return not-found error', async function () {
             return request(app)
-                    .get(`/api/content/000000000000000000000000`)
+                    .get(`/api/contents/000000000000000000000000`)
                     .query({skip: 1, limit: 1, fields: ['id', 'author']})
                     .set('Authorization', `Bearer ${token}`)
                     .expect(404)
@@ -72,7 +72,7 @@ describe('content', function () {
     describe('update', function () {
         it('should return modified content', async function () {
             return request(app)
-                    .patch(`/api/content/${contentId}`)
+                    .patch(`/api/contents/${contentId}`)
                     .set('Authorization', `Bearer ${token}`)
                     .send({title: 'Hello 2'})
                     .expect(200)
@@ -87,7 +87,7 @@ describe('content', function () {
         it('should return content with added tags', async function () {
             const tag = 'test1';
             await request(app)
-                    .post(`/api/content/${contentId}/tag/${tag}`)
+                    .post(`/api/contents/${contentId}/tag/${tag}`)
                     .set('Authorization', `Bearer ${token}`)
                     .expect(200)
                     .expect(function (res) {
@@ -96,7 +96,7 @@ describe('content', function () {
                     });
 
             return request(app)
-                    .get(`/api/content/${contentId}`)
+                    .get(`/api/contents/${contentId}`)
                     .set('Authorization', `Bearer ${token}`)
                     .expect(200)
                     .expect(function (res) {
@@ -107,11 +107,11 @@ describe('content', function () {
         it('should return content that deleted the specified tag', async function () {
             const tag = 'test2';
             await request(app)
-                    .post(`/api/content/${contentId}/tag/${tag}`)
+                    .post(`/api/contents/${contentId}/tag/${tag}`)
                     .set('Authorization', `Bearer ${token}`);
 
             return request(app)
-                    .del(`/api/content/${contentId}/tag/${tag}`)
+                    .del(`/api/contents/${contentId}/tag/${tag}`)
                     .set('Authorization', `Bearer ${token}`)
                     .expect(200)
                     .expect(function (res) {
@@ -129,12 +129,12 @@ describe('content', function () {
                 while (Math.random() < 0.85) {
                     tag++;
                 }
-                r.push(request(app).post(`/api/content/${contentId}/tag/${tag}`).set('Authorization', `Bearer ${token}`));
+                r.push(request(app).post(`/api/contents/${contentId}/tag/${tag}`).set('Authorization', `Bearer ${token}`));
             }
             await Promise.all(r);
 
             return request(app)
-                    .get(`/api/content/most-common-tags`)
+                    .get(`/api/contents/most-common-tags`)
                     .set('Authorization', `Bearer ${token}`)
                     .expect(200)
                     .expect(function (res) {
@@ -157,14 +157,14 @@ describe('content', function () {
                     tags: [`t${i}`, `t${i + 1}`, `t${i + 2}`, `t${i + 3}`],
                     category: '搞笑'
                 };
-                r.push(request(app).post('/api/content').set('Authorization', `Bearer ${token}`).send(con));
+                r.push(request(app).post('/api/contents').set('Authorization', `Bearer ${token}`).send(con));
             }
             await Promise.all(r);
         });
 
         it('should return contents', async function () {
             return request(app)
-                    .get('/api/content/search')
+                    .get('/api/contents/search')
                     .query({
                         includeTags: ['t3', 't4'],
                         excludeTags: ['t6'],

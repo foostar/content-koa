@@ -15,7 +15,7 @@ describe('upstream', function () {
         Upstream.remove({creater: accountId}).exec();
 
         res = await request(app)
-                    .post('/api/upstream')
+                    .post('/api/upstreams')
                     .set('Authorization', `Bearer ${token}`)
                     .send({platform: 'test', account: 'test', session: ['a=1', 'b=2']});
         if (res.body.status.code === 0) {
@@ -23,7 +23,7 @@ describe('upstream', function () {
         }
 
         await request(app)
-                    .post('/api/upstream')
+                    .post('/api/upstreams')
                     .set('Authorization', `Bearer ${token}`)
                     .send({platform: 'test', account: 'test2', session: ['a=1', 'b=2']});
     });
@@ -36,7 +36,7 @@ describe('upstream', function () {
         it('should return 200', async function () {
             // const res =
             await request(app)
-                    .post('/api/upstream')
+                    .post('/api/upstreams')
                     .set('Authorization', `Bearer ${token}`)
                     .send({platform: 'tencent', account: '123456@qq.com', session: 'a=1;b=2'})
                     .expect(200);
@@ -46,7 +46,7 @@ describe('upstream', function () {
     describe('show', function () {
         it('should return upstream account', async function () {
             return request(app)
-                    .get(`/api/upstream/${upstreamId}`)
+                    .get(`/api/upstreams/${upstreamId}`)
                     .set('Authorization', `Bearer ${token}`)
                     .expect(200)
                     .expect(function (res) {
@@ -56,7 +56,7 @@ describe('upstream', function () {
         });
         it('should return not-found error', async function () {
             return request(app)
-                    .get(`/api/upstream/000000000000000000000000`)
+                    .get(`/api/upstreams/000000000000000000000000`)
                     .set('Authorization', `Bearer ${token}`)
                     .expect(404)
                     .expect(function (res) {
@@ -68,7 +68,7 @@ describe('upstream', function () {
     describe('update', function () {
         it('should return modified upstream', async function () {
             return request(app)
-                    .patch(`/api/upstream/${upstreamId}`)
+                    .patch(`/api/upstreams/${upstreamId}`)
                     .set('Authorization', `Bearer ${token}`)
                     .send({session: ['modified']})
                     .expect(200)
@@ -84,7 +84,7 @@ describe('upstream', function () {
     describe('list', function () {
         it('should return upstreams', async function () {
             return request(app)
-                    .get(`/api/upstream`)
+                    .get(`/api/upstreams`)
                     .query({'account': 't'})
                     .set('Authorization', `Bearer ${token}`)
                     .expect(200)

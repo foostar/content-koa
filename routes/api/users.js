@@ -5,7 +5,7 @@ const $ = require('controllers/user');
 router.get('/', $.list);
 router.post('/', $.create);
 router.get('/:id', $.show);
+router.patch('/password', $.checkPassword, $.changePassword);
 router.patch('/:id', $.update);
-router.patch('/:id/password', $.changePassword, $.checkPassword);
 
 module.exports = router;
