@@ -84,7 +84,7 @@ Route         | File Path
 
 # API
 
-## `host: content-distribution.apps.xiaoyun.com/`
+## host `content-distribution.apps.xiaoyun.com`
 
 ## JWT
 
