@@ -59,10 +59,7 @@ exports.create = async (ctx, next) => {
 
 exports.show = async (ctx, next) => {
     const ups = await Upstream.findById(ctx.params.id);
-    if (!ups) {
-        ctx.status = 404;
-        throw Error(30404);
-    }
+    ctx.assert(ups, 404, '没有该平台账号', {code: 103001});
     ctx.body = {
         status: {
             code: 0,
@@ -74,10 +71,7 @@ exports.show = async (ctx, next) => {
 
 exports.update = async (ctx, next) => {
     const ups = await Upstream.findById(ctx.params.id);
-    if (!ups) {
-        ctx.status = 404;
-        throw Error(30404);
-    }
+    ctx.assert(ups, 404, '没有该平台账号', {code: 103001});
 
     if (ctx.request.body.session) {
         ups.session = ctx.request.body.session;
@@ -95,10 +89,8 @@ exports.update = async (ctx, next) => {
 
 exports.destroy = async (ctx, next) => {
     const ups = await Upstream.findById(ctx.params.id);
-    if (!ups) {
-        ctx.status = 404;
-        throw Error(30404);
-    }
+    ctx.assert(ups, 404, '没有该平台账号', {code: 103001});
+
     await ups.remove();
     ctx.body = {
         status: {

@@ -20,19 +20,20 @@ const RETURN_FIELDS = ['id', 'username', 'bindUpstreams', 'level', 'createdAt', 
 exports.checkPassword = async (ctx, next) => {
     const {username, password} = ctx.request.body;
     const user = await User.findOne({username});
-    if (!user) {
-        ctx.status = 404;
-        throw Error(10404);
-    }
 
-    if (hash(password) !== user.password) {
-        throw Error(10401);
-    }
+    ctx.assert(user, 404, '没有该用户', {code: 100001});
+
+    ctx.assert(
+        hash(password) === user.password,
+        400,
+        '密码错误',
+        {code: 100002}
+    );
     await next();
 };
 
 exports.signin = async (ctx, next) => {
-    await next();
+    // await next();
     const {username} = ctx.request.body;
     const user = await User.findOne({username});
 
@@ -93,10 +94,7 @@ exports.list = async (ctx, next) => {
 exports.show = async (ctx, next) => {
     const {id} = ctx.params;
     const user = await User.findOne({id});
-    if (!user) {
-        ctx.status = 404;
-        throw Error(10404);
-    }
+    ctx.assert(user, 404, '没有该用户', {code: 100001});
     ctx.body = {
         status: {
             code: 0,
@@ -110,20 +108,15 @@ exports.create = async (ctx, next) => {
     const operator = ctx.state.user;
     const {username, password, level, bindUpstreams} = ctx.request.body;
 
-    if (!username || !password || !level) { // !0 -> true
-        ctx.status = 400;
-        throw Error(11400);
-    }
+    ctx.assert(username, 400, '缺少 username 参数', {code: 100002});
+    ctx.assert(password, 400, '缺少 password 参数', {code: 100002});
+    ctx.assert(level, 400, '缺少 level 参数', {code: 100002});
 
-    if (operator.level !== 0 && operator.level <= level) {
-        ctx.status = 403;
-        throw Error(11401);
-    }
+    ctx.assert(operator.level === 0, '没有权限用户创建', {code: 100004});
 
-    if (await User.findOne({username})) {
-        ctx.status = 422;
-        throw Error(11422);
-    }
+    const existed = await User.findOne({username});
+
+    ctx.assert(!existed, 400, '用户已存在', {code: 100003});
 
     const user = await new User({
         username, password, level, bindUpstreams
@@ -149,13 +142,13 @@ exports.changePassword = async (ctx, next) => {
 
     const token = getToken(_.pick(user, 'id', 'username', 'level'));
 
-    console.log(user);
     await new Promise((resolve) => {
         setTimeout(() => {
             resolve();
             console.log('resolve');
         }, 3000);
     });
+
     ctx.body = {
         status: {
             code: 0,
@@ -170,23 +163,10 @@ exports.changePassword = async (ctx, next) => {
 };
 
 exports.update = async (ctx) => {
-    if (ctx.state.user.level === 1) {
-        ctx.status = 403;
-        throw Error(11401);
-    }
-
+    ctx.assert(ctx.state.user.level !== 1, 400, '没有权限', {code: 1000001});
     const user = await User.findById(ctx.params.id);
-    if (!user) {
-        ctx.status = 404;
-        throw Error(10404);
-    }
 
     let update = _.pick(ctx.request.body, 'bindUpstreams', 'level', 'password');
-
-    if (update.level === 0 && ctx.state.user.level !== 0) {
-        ctx.status = 403;
-        throw Error(11401);
-    }
 
     _.assign(user, update);
 

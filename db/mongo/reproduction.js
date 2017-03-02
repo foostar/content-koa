@@ -9,6 +9,7 @@ const schema = mongoose.Schema({
     },
     upstream: ObjectId,
     content: ObjectId,
+    publisher: ObjectId,
     publishAt: {type: Date, default: Date.now},
     view: {type: Number, default: 0},
     custom: Mixed

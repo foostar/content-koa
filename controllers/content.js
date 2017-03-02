@@ -55,10 +55,7 @@ exports.list = async (ctx, next) => {
 
 exports.show = async (ctx, next) => {
     let con = await Content.findById(ctx.params.id);
-    if (!con) {
-        ctx.status = 404;
-        throw Error(20404);
-    }
+    ctx.assert(con, 404, '没有该文章', {code: 101001});
     ctx.body = {
         status: {
             code: 0,
@@ -70,15 +67,16 @@ exports.show = async (ctx, next) => {
 
 exports.update = async (ctx, next) => {
     let con = await Content.findById(ctx.params.id);
-    if (!con) {
-        ctx.status = 500;
-        throw Error(20404);
-    }
+    ctx.assert(con, 404, '没有该文章', {code: 101001});
 
-    if (con.author.toString() !== ctx.state.user.id && ctx.state.user.level === 1) {
-        ctx.status = 403;
-        throw Error(20403);
-    }
+    const userLevel = ctx.state.user.level;
+
+    ctx.assert(
+        `${con.author}` === ctx.state.user.id || userLevel === 2 || userLevel === 0,
+        '400',
+        '没有修改此文章的权限',
+        {code: 101002}
+    );
 
     let update = _.pick(ctx.request.body, 'title', 'content', 'category');
     if (con['type'] === 'article' && update['content']) {
@@ -117,17 +115,17 @@ exports.listCommonTags = async (ctx, next) => {
 };
 
 exports.addTag = async (ctx, next) => {
-    if (ctx.state.user.level !== 2 && ctx.state.user.level !== 0) {
-        ctx.status = 403;
-        throw Error(20403);
-    }
+    const userLevel = ctx.state.user.level;
+    ctx.assert(
+        userLevel === 0 || userLevel === 2,
+        400,
+        '没有修改此文章的权限',
+        {code: 101002}
+    );
 
     const update = {'$set': {'redactor': ctx.state.user.id}, '$addToSet': {'tags': ctx.params.tag}};
     let con = await Content.findByIdAndUpdate(ctx.params.id, update, {new: true});
-    if (!con) {
-        ctx.status = 404;
-        throw Error(20404);
-    }
+    ctx.assert(con, 404, '没有该文章', {code: 101001});
 
     updateTag(ctx.params.tag);
 
@@ -141,17 +139,18 @@ exports.addTag = async (ctx, next) => {
 };
 
 exports.removeTag = async (ctx, next) => {
-    if (ctx.state.user.level !== 2 && ctx.state.user.level !== 0) {
-        ctx.status = 403;
-        throw Error(20403);
-    }
+    const userLevel = ctx.state.user.level;
+
+    ctx.assert(
+        userLevel === 0 || userLevel === 2,
+        400,
+        '没有修改此文章的权限',
+        {code: 101002}
+    );
 
     const update = {'$set': {'redactor': ctx.state.user.id}, '$pull': {'tags': ctx.params.tag}};
     let con = await Content.findByIdAndUpdate(ctx.params.id, update, {new: true});
-    if (!con) {
-        ctx.status = 404;
-        throw Error(20404);
-    }
+    ctx.assert(con, 404, '没有该文章', {code: 101001});
 
     updateTag(ctx.params.tag);
     ctx.body = {
@@ -164,10 +163,13 @@ exports.removeTag = async (ctx, next) => {
 };
 
 exports.search = async (ctx, next) => {
-    if (ctx.state.user.level !== 2 && ctx.state.user.level !== 0) {
-        ctx.status = 403;
-        throw Error(20403);
-    }
+    const userLevel = ctx.state.user.level;
+    ctx.assert(
+        userLevel === 0 || userLevel === 2,
+        400,
+        '没有修改此文章的权限',
+        {code: 101002}
+    );
 
     let options = {limit: 5, skip: 0, populate: 'author'};
     if (ctx.query.limit) options.limit = Math.min(parseInt(ctx.query.limit), 100) || 5;

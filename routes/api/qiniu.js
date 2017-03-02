@@ -1,7 +1,7 @@
 const Router = require('koa-router');
 const router = new Router();
-const $ = require('controllers/user');
+const $ = require('controllers/qiniu');
 
-router.post('/', $.checkPassword, $.signin);
+router.get('/uptoken', $.uptoken);
 
 module.exports = router;

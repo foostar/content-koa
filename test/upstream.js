@@ -60,7 +60,7 @@ describe('upstream', function () {
                     .set('Authorization', `Bearer ${token}`)
                     .expect(404)
                     .expect(function (res) {
-                        if (res.body.status.code !== 30404) throw new Error("code isn't 30404");
+                        if (res.body.status.code !== 103001) throw new Error("code isn't 103001");
                     });
         });
     });

@@ -64,7 +64,7 @@ describe('content', function () {
                     .set('Authorization', `Bearer ${token}`)
                     .expect(404)
                     .expect(function (res) {
-                        if (res.body.status.code !== 20404) throw new Error("code isn't 20404");
+                        if (res.body.status.code !== 101001) throw new Error("code isn't 101001");
                     });
         });
     });

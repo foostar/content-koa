@@ -48,7 +48,7 @@ describe('base', function () {
                 .set('Content-Type', 'application/json')
                 .send({username: 'non-exist', password: '123456'})
                 .expect(function (res) {
-                    if (res.body.status.code !== 10404) throw new Error("code isn't 10404");
+                    if (res.body.status.code !== 100001) throw new Error("code isn't 100001");
                 });
         });
 
@@ -58,7 +58,7 @@ describe('base', function () {
                 .set('Content-Type', 'application/json')
                 .send({username: 'test', password: 'wrong password'})
                 .expect(function (res) {
-                    if (res.body.status.code !== 10401) throw new Error("code isn't 10401");
+                    if (res.body.status.code !== 100002) throw new Error("code isn't 100002");
                 });
         });
     });

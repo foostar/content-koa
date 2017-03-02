@@ -1,8 +1,8 @@
 const Reproduction = require('db/mongo/reproduction');
 const mongoose = require('mongoose');
 const _ = require('lodash');
-const FIELDS = ['id', 'upstream', 'content', 'publishAt', 'view', 'custom', 'createdAt', 'updatedAt'];
-const GROUP_FIELDS = {upstream: '$upstream', content: '$upstream'};
+const FIELDS = ['id', 'upstream', 'publisher', 'content', 'publishAt', 'view', 'custom', 'createdAt', 'updatedAt'];
+const GROUP_FIELDS = {upstream: '$upstream', content: '$upstream', publisher: '$publisher'};
 
 function makeCondition (arg) {
     let condition = {};
@@ -69,10 +69,7 @@ exports.list = async (ctx, next) => {
 
 exports.show = async (ctx, next) => {
     let reprod = await Reproduction.findById(ctx.params.id);
-    if (!reprod) {
-        ctx.status = 404;
-        throw Error(40404);
-    }
+    ctx.assert(reprod, 404, '没有该记录', {code: 103001});
     ctx.body = {
         status: {
             code: 0,
@@ -83,9 +80,10 @@ exports.show = async (ctx, next) => {
 };
 
 exports.upsert = async (ctx, next) => {
+    const publisher = ctx.state.user.id;
     let reprod = await Reproduction.findById(ctx.params.id);
     if (!reprod) {
-        reprod = new Reproduction(ctx.request.body);
+        reprod = new Reproduction(Object.assign({}, ctx.request.body, {publisher}));
         reprod._id = ctx.params.id;
     } else {
         _.assign(reprod, _.pick('upstream', 'content', 'publishAt', 'view'));
