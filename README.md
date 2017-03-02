@@ -84,6 +84,8 @@ Route         | File Path
 
 # API
 
+## `host: content-distribution.apps.xiaoyun.com/`
+
 ## JWT
 
 **POST** `/api/signin`
