@@ -236,7 +236,7 @@ fields        | 默认值["id", "type", "tags", "title", "category", "createdAt"
 ```
 
 ### Show
-**GET** `/api/content/:id`
+**GET** `/api/contents/:id`
 
 通过id获得内容
 
@@ -261,7 +261,7 @@ fields        | 默认值["id", "type", "tags", "title", "category", "createdAt"
 ```
 
 ### Update
-**PATCH** `/api/content/:id`
+**PATCH** `/api/contents/:id`
 
 修改文章内容，只能自己创建的内容，可修改字段为"title", "content", "category"，管理员可以修改作者的任意内容
 
@@ -291,7 +291,7 @@ fields        | 默认值["id", "type", "tags", "title", "category", "createdAt"
 ```
 
 ### Search
-**GET** `/api/content/search`
+**GET** `/api/contents/search`
 
 搜索符合条件的内容
 
@@ -335,7 +335,7 @@ keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制
 
 增加tag到内容
 
-**POST** `/api/content/:id/tag/:tag`
+**POST** `/api/contents/:id/tag/:tag`
 
 ```js
 //res
@@ -355,7 +355,7 @@ keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制
 
 删除指定的tag
 
-**DELETE** `/api/content/:id/tag/:tag`
+**DELETE** `/api/contents/:id/tag/:tag`
 
 
 ```js
@@ -376,7 +376,7 @@ keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制
 
 列出最近20条常用的tag
 
-**GET** `/api/content/most-common-tags`
+**GET** `/api/contents/most-common-tags`
 
 ```
 {
@@ -398,7 +398,7 @@ keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制
 
 ### Create
 
-**POST** `/api/upstream`
+**POST** `/api/upstreams`
 
 ```js
 //req
@@ -417,7 +417,7 @@ keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制
 ```
 
 ### Delete
-**DELETE** `/api/upstream/:id`
+**DELETE** `/api/upstreams/:id`
 
 ```js
 //res
@@ -431,7 +431,7 @@ keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制
 ```
 
 ### Show
-**GET** `/api/upstream/:id`
+**GET** `/api/upstreams/:id`
 
 ```js
 //res
@@ -456,7 +456,7 @@ keyword       | 正文包含的关键字 注意:由于mongo全文索引的限制
 
 修改上游帐号，目前只允许修改session
 
-**Patch** `/api/upstream/:id`
+**Patch** `/api/upstreams/:id`
 
 ```js
 //req
@@ -540,6 +540,7 @@ platform      | 所属平台，精确匹配
     "content":"000000000000000000000000",
     "publisher": "000000000000000000000000",
     "publishAt":"2017-02-26T14:24:54.331Z",
+    "view": 0,
     "custom":"test"
 }
 
