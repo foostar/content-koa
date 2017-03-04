@@ -1,4 +1,5 @@
 const Reproduction = require('db/mongo/reproduction');
+const ReproductionLog = require('db/mongo/reproduction-log');
 const mongoose = require('mongoose');
 const _ = require('lodash');
 const FIELDS = ['id', 'upstream', 'publisher', 'content', 'publishAt', 'view', 'custom', 'createdAt', 'updatedAt'];
@@ -89,6 +90,14 @@ exports.upsert = async (ctx, next) => {
         _.assign(reprod, _.pick('upstream', 'content', 'publishAt'));
     }
     await reprod.save();
+
+    const record = new ReproductionLog({
+        reproduction: reprod._id,
+        version: reprod.v,
+        view: reprod.view
+    });
+    await record.save();
+
     ctx.body = {
         status: {
             code: 0,
