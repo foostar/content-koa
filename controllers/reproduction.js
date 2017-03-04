@@ -86,7 +86,7 @@ exports.upsert = async (ctx, next) => {
         reprod = new Reproduction(Object.assign({}, ctx.request.body, {publisher}));
         reprod._id = ctx.params.id;
     } else {
-        _.assign(reprod, _.pick('upstream', 'content', 'publishAt', 'view'));
+        _.assign(reprod, _.pick('upstream', 'content', 'publishAt'));
     }
     await reprod.save();
     ctx.body = {
@@ -95,5 +95,32 @@ exports.upsert = async (ctx, next) => {
             message: 'success'
         },
         data: _.pick(reprod, FIELDS)
+    };
+};
+
+exports.update = async (ctx, next) => {
+    const {data} = ctx.request.body;
+    ctx.assert(Array.isArray(data), 400, 'data 不是数组');
+
+    const update = async (item) => {
+        const {id, view, upstream} = item;
+        await Reproduction.update(
+            {_id: id},
+            _.omitBy({view, upstream}, _.isNil),
+            {upsert: true}
+        );
+    };
+
+    try {
+        await Promise.all(data.map(update));
+    } catch (err) {
+        ctx.throw(err);
+    }
+
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        }
     };
 };

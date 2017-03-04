@@ -7,6 +7,7 @@ const schema = mongoose.Schema({
         required: true,
         unique: true
     },
+    title: String,
     upstream: ObjectId,
     content: ObjectId,
     publisher: ObjectId,

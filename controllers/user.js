@@ -33,11 +33,12 @@ exports.checkPassword = async (ctx, next) => {
 };
 
 exports.signin = async (ctx, next) => {
-    // await next();
     const {username} = ctx.request.body;
     const user = await User.findOne({username});
 
     const token = getToken(_.pick(user, 'id', 'username', 'level'));
+
+    console.log(user.bindUpstreams);
 
     ctx.body = {
         status: {
@@ -48,6 +49,7 @@ exports.signin = async (ctx, next) => {
             username,
             id: user.id,
             level: user.level,
+            bindUpstreams: user.bindUpstreams,
             token
         }
     };

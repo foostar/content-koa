@@ -13,6 +13,8 @@ router.use(async function (ctx, next) {
 router.get('/', $.list);
 router.get('/stat', $.stat);
 router.get('/:id', $.show);
+
+router.post('/update', $.update);
 router.post('/:id', $.upsert);
 
 module.exports = router;

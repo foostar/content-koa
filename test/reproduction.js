@@ -46,7 +46,7 @@ describe('reproduction', function () {
 
     before(async function () {
         let r = [];
-        for (var i = 0; i < 10; i++) {
+        for (let i = 0; i < 10; i++) {
             const id = '1'.repeat(23) + i.toString();
             const data = {
                 upstream: '1'.repeat(23) + (i % 2).toString(),
@@ -85,7 +85,7 @@ describe('reproduction', function () {
                     .expect(200)
                     .expect(function (res) {
                         if (res.body.status.code !== 0) throw new Error("code isn't 0");
-                        for (var i = res.body.data.length - 1; i >= 0; i--) {
+                        for (let i = res.body.data.length - 1; i >= 0; i--) {
                             if (res.body.data[i] === upstreams[0] && res.body.data[i].total !== 25) throw new Error('total not equal to 25');
                             if (res.body.data[i] === upstreams[1] && res.body.data[i].total !== 20) throw new Error('total not equal to 20');
                         }
