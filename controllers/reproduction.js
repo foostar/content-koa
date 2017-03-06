@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const _ = require('lodash');
 const moment = require('moment');
 
-const FIELDS = ['link', 'upstream', 'publisher', 'author', 'content', 'date', 'publishAt', 'view', 'custom', 'createdAt', 'updatedAt'];
+const FIELDS = ['link', 'upstream', 'publisher', 'author', 'content', 'date', 'publishAt', 'view', 'custom', 'status', 'createdAt', 'updatedAt'];
 const GROUP_FIELDS = {upstream: '$upstream', content: '$upstream', publisher: '$publisher', link: '$link', author: 'author', date: '$date'};
 
 function makeCondition (arg) {
@@ -101,7 +101,7 @@ const upsertOne = async function (curUser, item) {
         }
     }
     const {link, date} = item;
-    let reprod = await Reproduction.findOne({link});
+    let reprod = await Reproduction.findOne({link}, null, {sort: {date: -1}});
 
     if (!reprod) {
         reprod = new Reproduction(Object.assign({publisher: curUser}, item));
