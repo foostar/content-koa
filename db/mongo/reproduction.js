@@ -11,7 +11,7 @@ const schema = mongoose.Schema({
     content: {type: ObjectId, required: true},
     publisher: {type: ObjectId, required: true},
     publishAt: {type: Date, default: Date.now},
-    date: {type: String, required: true},
+    date: {type: String, required: true}, // YYYYMMDD
     view: {type: Number, default: 0},
     custom: Mixed
 }, {

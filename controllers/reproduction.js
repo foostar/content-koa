@@ -10,8 +10,8 @@ function makeCondition (arg) {
     let condition = {};
     if (arg.publishStart || arg.publishEnd) {
         condition['publishAt'] = {};
-        if (arg.publishStart) condition['publishAt']['$gte'] = new Date(arg.publishStart);
-        if (arg.publishEnd) condition['publishAt']['$le'] = new Date(arg.publishEnd);
+        if (arg.publishStart) condition['publishAt']['$gte'] = new Date(Number(arg.publishStart));
+        if (arg.publishEnd) condition['publishAt']['$lt'] = new Date(Number(arg.publishEnd));
     }
 
     if (arg.dateStart || arg.dateStart) {
