@@ -554,6 +554,7 @@ platform      | 所属平台，精确匹配
     "upstream":"000000000000000000000000",
     "content":"000000000000000000000000",
     "publisher": "000000000000000000000000",
+    "author": "000000000000000000000000",
     "publishAt":"2017-02-26T14:24:54.331Z",
     "custom":"test"
 }
@@ -571,6 +572,7 @@ platform      | 所属平台，精确匹配
         "content": "000000000000000000000000",
         "publishAt": "2017-02-26T14:16:14.561Z",
         "publisher": "000000000000000000000000",
+        "author": "000000000000000000000000",
         "view": 0,
         "custom": "test",
         "createdAt": "2017-02-26T14:16:14.569Z",
@@ -600,6 +602,7 @@ dateEnd       | 时间范围，上界
 upstreams     | 上游ID，可传多个值
 publishers    | 发布人ID，可传多个值
 contents      | 内容ID，可传多个值
+authors       | 作者ID，可传多个值
 links         | 副本link，可传多个值
 
 ```js
@@ -645,7 +648,8 @@ upstreams     | 上游ID，可传多个值
 publishers    | 发布人ID，可传多个值
 contents      | 内容ID，可传多个值
 links         | 副本link，可传多个值
-groupBy       | 以何字段分组统计，目前仅支持"upstream" / "content" / "publisher" / "link" / "date"，如果没有传递该参数结果不分组
+authors       | 作者ID，可传多个值
+groupBy       | 以何字段分组统计，目前仅支持"upstream" / "content" / "publisher" / "author" / "link" / "date"，如果没有传递该参数结果不分组
 
 **GET** `/api/reproduction/stat`
 

@@ -8,8 +8,9 @@ const schema = mongoose.Schema({
     },
     title: String,
     upstream: {type: ObjectId, required: true},
-    content: {type: ObjectId, required: true},
-    publisher: {type: ObjectId, required: true},
+    content: ObjectId,
+    publisher: ObjectId,
+    author: ObjectId,
     publishAt: {type: Date, default: Date.now},
     date: {type: String, required: true}, // YYYYMMDD
     view: {type: Number, default: 0},
