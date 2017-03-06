@@ -631,7 +631,7 @@ upstreams     | 上游ID，可传多个值
 publishers    | 发布人ID，可传多个值
 contents      | 内容ID，可传多个值
 links         | 副本link，可传多个值
-groupBy       | 以何字段分组统计，目前仅支持"upstream" / "content" / "publisher" / "link"，如果没有传递该参数结果不分组
+groupBy       | 以何字段分组统计，目前仅支持"upstream" / "content" / "publisher" / "link" / "date"，如果没有传递该参数结果不分组
 
 **GET** `/api/reproduction/stat`
 

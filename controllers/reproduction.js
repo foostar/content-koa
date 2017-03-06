@@ -4,7 +4,7 @@ const _ = require('lodash');
 const moment = require('moment');
 
 const FIELDS = ['link', 'upstream', 'publisher', 'content', 'date', 'publishAt', 'view', 'custom', 'createdAt', 'updatedAt'];
-const GROUP_FIELDS = {upstream: '$upstream', content: '$upstream', publisher: '$publisher', link: '$link'};
+const GROUP_FIELDS = {upstream: '$upstream', content: '$upstream', publisher: '$publisher', link: '$link', date: '$date'};
 
 function makeCondition (arg) {
     let condition = {};
@@ -17,7 +17,7 @@ function makeCondition (arg) {
     if (arg.dateStart || arg.dateStart) {
         condition['date'] = {};
         if (arg.dateStart) condition['date']['$gte'] = new Date(arg.dateStart);
-        if (arg.dateStart) condition['date']['$le'] = new Date(arg.dateStart);
+        if (arg.dateStart) condition['date']['$lt'] = new Date(arg.dateStart);
     }
 
     if (arg.links) {
