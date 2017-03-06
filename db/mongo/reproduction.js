@@ -8,6 +8,7 @@ const schema = mongoose.Schema({
     },
     title: String,
     status: String,
+    contentType: {type: String, enum: ['article', 'video']},
     upstream: {type: ObjectId, required: true},
     content: ObjectId,
     publisher: ObjectId,
