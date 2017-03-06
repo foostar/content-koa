@@ -5,6 +5,7 @@ const content = mongoose.Schema({
     title: {type: String},
     type: {type: String, required: true, enum: ['article', 'video']},
     content: {type: String, required: true},
+    originalContent: {type: String, required: true},
     textualContent: {type: String, required: true},
     tags: {type: [String], default: []},
     category: {

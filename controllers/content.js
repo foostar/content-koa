@@ -4,7 +4,7 @@ const nodejieba = require('nodejieba');
 
 const _ = require('lodash');
 
-const CONTENT_FIELDS = ['id', 'type', 'title', 'content', 'tags', 'category', 'author', 'redactor', 'createdAt', 'updatedAt'];
+const CONTENT_FIELDS = ['id', 'type', 'title', 'content', 'originalContent', 'tags', 'category', 'author', 'redactor', 'createdAt', 'updatedAt'];
 
 function escapeRegExp (str) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'); // eslint-disable-line
@@ -12,6 +12,7 @@ function escapeRegExp (str) {
 
 exports.create = async (ctx, next) => {
     const con = _.extend({}, ctx.request.body, {author: ctx.state.user.id});
+    con.originalContent = con.content;
     if (con['type'] === 'article') {
         con['textualContent'] = nodejieba.cut(htmlToText.fromString(con['content']), true).join(' ');
     }
