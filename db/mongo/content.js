@@ -13,8 +13,11 @@ const content = mongoose.Schema({
         required: true,
         enum: ['社会', '搞笑', '美图', '科学', '历史', '互联网', '科技', '两性', '情感', '女人', '健康', '社会', '三农', '军事', '游戏', '娱乐', '体育', '宠物', '家居', '时尚', '育儿', '美食', '旅游', '汽车', '生活']
     },
-
     author: {
+        type: ObjectId,
+        ref: 'user'
+    },
+    owner: {
         type: ObjectId,
         ref: 'user'
     },

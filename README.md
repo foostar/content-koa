@@ -260,6 +260,20 @@ fields        | 默认值["id", "type", "tags", "title", "category", "createdAt"
 }
 ```
 
+### Acquire
+
+锁定一个文章，不允许他人修改。
+
+**POST** `/api/contents/:id/acquire`
+
+
+### Release
+
+解锁一个文章
+
+**POST** `/api/contents/:id/release`
+
+
 ### Update
 **PATCH** `/api/contents/:id`
 
