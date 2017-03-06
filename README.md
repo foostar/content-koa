@@ -529,13 +529,14 @@ platform      | 所属平台，精确匹配
 
 ### Upsert
 
-保存或更新上游副本
-
-**POST** `/api/reproduction/:id`
+保存或更新上游副本，link字段必传，date默认值为今天，publisher默认值为当前用户，第一次保存信息时"upstream", "content"必传。
+**POST** `/api/reproduction/`
 
 ```js
-//req /api/reproduction/majihua.baijia.baidu.com%2Farticle%2F783077
+//req
 {
+    "link": "majihua.baijia.baidu.com/article/783077",
+    "date": "20170306",
     "upstream":"000000000000000000000000",
     "content":"000000000000000000000000",
     "publisher": "000000000000000000000000",
@@ -550,7 +551,8 @@ platform      | 所属平台，精确匹配
         "message": "success"
     },
     "data": {
-        "id": "majihua.baijia.baidu.com/article/783077",
+        "link": "majihua.baijia.baidu.com/article/783077",
+        "date": "20170306",
         "upstream": "000000000000000000000000",
         "content": "000000000000000000000000",
         "publishAt": "2017-02-26T14:16:14.561Z",
@@ -563,30 +565,9 @@ platform      | 所属平台，精确匹配
 }
 ```
 
-### Show
+### Batch
+批量保存或更新上游副本，与Upsert区别只是上传的是数组。
 
-**GET** `/api/reproduction/:id`
-
-```js
-//res
-{
-    "status": {
-        "code": 0,
-        "message": "success"
-    },
-    "data": {
-        "id": "majihua.baijia.baidu.com/article/783077",
-        "upstream": "000000000000000000000000",
-        "content": "000000000000000000000000",
-        "publisher": "000000000000000000000000",
-        "publishAt": "2017-02-26T14:16:14.561Z",
-        "view": 0,
-        "custom": "test",
-        "createdAt": "2017-02-26T14:16:14.569Z",
-        "updatedAt": "2017-02-26T14:16:14.569Z"
-    }
-}
-```
 
 ### Search
 
@@ -600,8 +581,12 @@ skip          | 默认值为0
 limit         | 默认值5，最大100
 publishStart  | 副本发布时间范围，下界
 publishEnd    | 副本发布时间范围，上界
+dateStart     | 时间范围，下界
+dateEnd       | 时间范围，上界
 upstreams     | 上游ID，可传多个值
+publishers    | 发布人ID，可传多个值
 contents      | 内容ID，可传多个值
+links         | 副本link，可传多个值
 
 ```js
 //req ?upstreams=111111111111111111111111
@@ -616,7 +601,8 @@ contents      | 内容ID，可传多个值
         "skip": 0,
         "count": 1,
         "reproductions": [{
-            "id": "111111111111111111111119",
+            "link": "111111111111111111111119",
+            "date": "20170306",
             "upstream": "111111111111111111111111",
             "content": "111111111111111111111110",
             "publisher": "111111111111111111111110",
@@ -639,9 +625,13 @@ Parameter     | Explain
 ------------- | -----------------------
 publishStart  | 副本发布时间范围，下界
 publishEnd    | 副本发布时间范围，上界
+dateStart     | 时间范围，下界
+dateEnd       | 时间范围，上界
 upstreams     | 上游ID，可传多个值
+publishers    | 发布人ID，可传多个值
 contents      | 内容ID，可传多个值
-groupBy       | 以何字段分组统计，目前仅支持"upstream" / "content" / "publisher"，如果没有传递该参数结果不分组
+links         | 副本link，可传多个值
+groupBy       | 以何字段分组统计，目前仅支持"upstream" / "content" / "publisher" / "link"，如果没有传递该参数结果不分组
 
 **GET** `/api/reproduction/stat`
 

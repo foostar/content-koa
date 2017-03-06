@@ -12,9 +12,8 @@ router.use(async function (ctx, next) {
 
 router.get('/', $.list);
 router.get('/stat', $.stat);
-router.get('/:id', $.show);
 
-router.post('/update', $.update);
-router.post('/:id', $.upsert);
+router.post('/batch', $.batchUpsert);
+router.post('/', $.upsert);
 
 module.exports = router;

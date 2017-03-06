@@ -1,9 +1,10 @@
 const Reproduction = require('db/mongo/reproduction');
-const ReproductionLog = require('db/mongo/reproduction-log');
 const mongoose = require('mongoose');
 const _ = require('lodash');
-const FIELDS = ['id', 'upstream', 'publisher', 'content', 'publishAt', 'view', 'custom', 'createdAt', 'updatedAt'];
-const GROUP_FIELDS = {upstream: '$upstream', content: '$upstream', publisher: '$publisher'};
+const moment = require('moment');
+
+const FIELDS = ['link', 'upstream', 'publisher', 'content', 'date', 'publishAt', 'view', 'custom', 'createdAt', 'updatedAt'];
+const GROUP_FIELDS = {upstream: '$upstream', content: '$upstream', publisher: '$publisher', link: '$link'};
 
 function makeCondition (arg) {
     let condition = {};
@@ -11,6 +12,17 @@ function makeCondition (arg) {
         condition['publishAt'] = {};
         if (arg.publishStart) condition['publishAt']['$gte'] = new Date(arg.publishStart);
         if (arg.publishEnd) condition['publishAt']['$le'] = new Date(arg.publishEnd);
+    }
+
+    if (arg.dateStart || arg.dateStart) {
+        condition['date'] = {};
+        if (arg.dateStart) condition['date']['$gte'] = new Date(arg.dateStart);
+        if (arg.dateStart) condition['date']['$le'] = new Date(arg.dateStart);
+    }
+
+    if (arg.links) {
+        const links = _.isArray(arg.links) ? arg.links : [arg.links];
+        condition['link'] = {'$in': links.map(mongoose.Types.ObjectId)};
     }
 
     if (arg.upstreams) {
@@ -22,6 +34,12 @@ function makeCondition (arg) {
         const contents = _.isArray(arg.contents) ? arg.contents : [arg.contents];
         condition['content'] = {'$in': contents.map(mongoose.Types.ObjectId)};
     }
+
+    if (arg.publishers) {
+        const publishers = _.isArray(arg.publishers) ? arg.publishers : [arg.publishers];
+        condition['publisher'] = {'$in': publishers.map(mongoose.Types.ObjectId)};
+    }
+
     return condition;
 }
 
@@ -53,7 +71,7 @@ exports.list = async (ctx, next) => {
 
     const condition = makeCondition(ctx.query);
     const count = await Reproduction.count(condition);
-    let reprods = await Reproduction.find(condition, null, options).sort({updatedAt: -1});
+    let reprods = await Reproduction.find(condition, null, options).sort({date: -1});
     reprods = reprods.map(x => _.pick(x, FIELDS));
     ctx.body = {
         status: {
@@ -68,35 +86,26 @@ exports.list = async (ctx, next) => {
     };
 };
 
-exports.show = async (ctx, next) => {
-    let reprod = await Reproduction.findById(ctx.params.id);
-    ctx.assert(reprod, 404, '没有该记录', {code: 103001});
-    ctx.body = {
-        status: {
-            code: 0,
-            message: 'success'
-        },
-        data: _.pick(reprod, FIELDS)
-    };
+const upsertOne = async function (curUser, item) {
+    item.date = moment(item.date).format('YYYYMMDD');
+    const {link, date} = item;
+    let reprod = await Reproduction.findOne({link});
+
+    if (!reprod) {
+        reprod = new Reproduction(Object.assign({publisher: curUser}, item));
+        return reprod.save();
+    } else {
+        let data = Object.assign(_.omit(reprod.toJSON(), '_id', 'createdAt', 'updatedAt', '__v'), item);
+        return Reproduction.findOneAndUpdate(
+        {link, date},
+        {$set: _.omit(data, 'link', 'date')},
+        {upsert: true, new: true});
+    }
 };
 
 exports.upsert = async (ctx, next) => {
-    const publisher = ctx.state.user.id;
-    let reprod = await Reproduction.findById(ctx.params.id);
-    if (!reprod) {
-        reprod = new Reproduction(Object.assign({}, ctx.request.body, {publisher}));
-        reprod._id = ctx.params.id;
-    } else {
-        _.assign(reprod, _.pick('upstream', 'content', 'publishAt'));
-    }
-    await reprod.save();
-
-    const record = new ReproductionLog({
-        reproduction: reprod._id,
-        version: reprod.v,
-        view: reprod.view
-    });
-    await record.save();
+    const item = Object.assign({}, ctx.request.body);
+    const reprod = await upsertOne(ctx.state.user.id, item);
 
     ctx.body = {
         status: {
@@ -107,21 +116,12 @@ exports.upsert = async (ctx, next) => {
     };
 };
 
-exports.update = async (ctx, next) => {
-    const {data} = ctx.request.body;
+exports.batchUpsert = async (ctx, next) => {
+    const data = ctx.request.body;
     ctx.assert(Array.isArray(data), 400, 'data 不是数组');
 
-    const update = async (item) => {
-        const {id, view, upstream} = item;
-        await Reproduction.update(
-            {_id: id},
-            _.omitBy({view, upstream}, _.isNil),
-            {upsert: true}
-        );
-    };
-
     try {
-        await Promise.all(data.map(update));
+        await Promise.all(data.map(x => upsertOne(ctx.state.user.id, x)));
     } catch (err) {
         ctx.throw(err);
     }

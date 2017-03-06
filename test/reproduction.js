@@ -18,9 +18,10 @@ describe('reproduction', function () {
 
     describe('upsert', function () {
         it('should return 200', async function () {
-            const id = encodeURIComponent('majihua.baijia.baidu.com/article/783077');
             const data = {
+                link: 'majihua.baijia.baidu.com/article/783077',
                 upstream: '0'.repeat(24),
+                date: '20170306',
                 content: '0'.repeat(24),
                 publishAt: (new Date()).toISOString(),
                 custom: 'test'
@@ -28,14 +29,9 @@ describe('reproduction', function () {
             const match = _.matches(data);
 
             await request(app)
-                    .post(`/api/reproduction/${id}`)
+                    .post(`/api/reproduction/`)
                     .set('Authorization', `Bearer ${token}`)
                     .send(data)
-                    .expect(200);
-
-            return request(app)
-                    .get(`/api/reproduction/${id}`)
-                    .set('Authorization', `Bearer ${token}`)
                     .expect(200)
                     .expect(function (res) {
                         if (res.body.status.code !== 0) throw new Error("code isn't 0");
@@ -44,19 +40,22 @@ describe('reproduction', function () {
         });
     });
 
-    before(async function () {
-        let r = [];
+    before('batch upsert', async function () {
+        let data = [];
         for (let i = 0; i < 10; i++) {
-            const id = '1'.repeat(23) + i.toString();
-            const data = {
+            const item = {
+                link: '1'.repeat(23) + i.toString(),
                 upstream: '1'.repeat(23) + (i % 2).toString(),
                 content: '1'.repeat(23) + ((i + 1) % 2).toString(),
                 custom: 'test',
                 view: i
             };
-            r.push(request(app).post(`/api/reproduction/${id}`).set('Authorization', `Bearer ${token}`).send(data));
+            data.push(item);
         }
-        return Promise.all(r);
+        await request(app)
+            .post(`/api/reproduction/batch`)
+            .set('Authorization', `Bearer ${token}`)
+            .send(data);
     });
 
     describe('search', function () {
