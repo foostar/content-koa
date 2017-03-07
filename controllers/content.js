@@ -4,7 +4,7 @@ const nodejieba = require('nodejieba');
 
 const _ = require('lodash');
 
-const CONTENT_FIELDS = ['id', 'type', 'title', 'content', 'originalContent', 'tags', 'category', 'author', 'redactor', 'createdAt', 'updatedAt'];
+const CONTENT_FIELDS = ['id', 'type', 'title', 'content', 'originalContent', 'tags', 'category', 'author', 'owner', 'redactor', 'createdAt', 'updatedAt'];
 
 function escapeRegExp (str) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'); // eslint-disable-line
@@ -12,6 +12,9 @@ function escapeRegExp (str) {
 
 exports.create = async (ctx, next) => {
     const con = _.extend({}, ctx.request.body, {author: ctx.state.user.id});
+    let tags = con.tags || [];
+    tags.push(ctx.state.user.level === 1 ? '精品' : '原创');
+    con.tags = tags;
     con.originalContent = con.content;
     if (con['type'] === 'article') {
         con['textualContent'] = nodejieba.cut(htmlToText.fromString(con['content']), true).join(' ');
@@ -66,8 +69,9 @@ exports.show = async (ctx, next) => {
     };
 };
 
-exports.update = async (ctx, next) => {
-    let con = await Content.findById(ctx.params.id);
+// verify for update
+async function verifyAndFindOne (ctx, id) {
+    let con = await Content.findById(id);
     ctx.assert(con, 404, '没有该文章', {code: 101001});
 
     const userLevel = ctx.state.user.level;
@@ -78,6 +82,49 @@ exports.update = async (ctx, next) => {
         '没有修改此文章的权限',
         {code: 101002}
     );
+
+    ctx.assert(
+        !con.owner || `${con.owner}` === ctx.state.user.id,
+        '400',
+        '文章被锁定',
+        {code: 101003}
+    );
+
+    return con;
+}
+
+exports.acquire = async (ctx, next) => {
+    let con = await verifyAndFindOne(ctx, ctx.params.id);
+
+    con.owner = ctx.state.user.id;
+    con = await con.save();
+
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: _.pick(con, CONTENT_FIELDS)
+    };
+};
+
+exports.release = async (ctx, next) => {
+    let con = await verifyAndFindOne(ctx, ctx.params.id);
+
+    con.owner = null;
+    con = await con.save();
+
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: _.pick(con, CONTENT_FIELDS)
+    };
+};
+
+exports.update = async (ctx, next) => {
+    let con = await verifyAndFindOne(ctx, ctx.params.id);
 
     let update = _.pick(ctx.request.body, 'title', 'content', 'category');
     if (con['type'] === 'article' && update['content']) {
@@ -116,13 +163,7 @@ exports.listCommonTags = async (ctx, next) => {
 };
 
 exports.addTag = async (ctx, next) => {
-    const userLevel = ctx.state.user.level;
-    ctx.assert(
-        userLevel === 0 || userLevel === 2,
-        400,
-        '没有修改此文章的权限',
-        {code: 101002}
-    );
+    await verifyAndFindOne(ctx, ctx.params.id);
 
     const update = {'$set': {'redactor': ctx.state.user.id}, '$addToSet': {'tags': ctx.params.tag}};
     let con = await Content.findByIdAndUpdate(ctx.params.id, update, {new: true});
@@ -140,14 +181,7 @@ exports.addTag = async (ctx, next) => {
 };
 
 exports.removeTag = async (ctx, next) => {
-    const userLevel = ctx.state.user.level;
-
-    ctx.assert(
-        userLevel === 0 || userLevel === 2,
-        400,
-        '没有修改此文章的权限',
-        {code: 101002}
-    );
+    await verifyAndFindOne(ctx, ctx.params.id);
 
     const update = {'$set': {'redactor': ctx.state.user.id}, '$pull': {'tags': ctx.params.tag}};
     let con = await Content.findByIdAndUpdate(ctx.params.id, update, {new: true});

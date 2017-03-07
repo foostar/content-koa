@@ -7,9 +7,12 @@ const schema = mongoose.Schema({
         required: true
     },
     title: String,
+    status: String,
+    contentType: {type: String, enum: ['article', 'video']},
     upstream: {type: ObjectId, required: true},
-    content: {type: ObjectId, required: true},
-    publisher: {type: ObjectId, required: true},
+    content: ObjectId,
+    publisher: ObjectId,
+    author: ObjectId,
     publishAt: {type: Date, default: Date.now},
     date: {type: String, required: true}, // YYYYMMDD
     view: {type: Number, default: 0},
