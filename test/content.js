@@ -22,8 +22,7 @@ describe('content', function () {
 
     describe('create', function () {
         it('should return 200', async function () {
-            // const res =
-            await request(app)
+            return request(app)
                     .post('/api/contents')
                     .set('Authorization', `Bearer ${token}`)
                     .send(testContent)
@@ -31,11 +30,30 @@ describe('content', function () {
         });
     });
 
+    describe('remove', function () {
+        it('should return 200', async function () {
+            const res = await request(app)
+                    .post('/api/contents')
+                    .set('Authorization', `Bearer ${token}`)
+                    .send(testContent);
+
+            await request(app)
+                    .del(`/api/contents/${res.body.data.id}`)
+                    .set('Authorization', `Bearer ${token}`)
+                    .expect(200);
+
+            return request(app)
+                    .get(`/api/contents/${res.body.data.id}`)
+                    .set('Authorization', `Bearer ${token}`)
+                    .expect(404);
+        });
+    });
+
     describe('list', function () {
         it('should return contents belong to account', async function () {
             return request(app)
                     .get('/api/contents')
-                    .query({skip: 1, limit: 1, fields: ['id', 'author']})
+                    .query({skip: 0, limit: 1, fields: ['id', 'author']})
                     .set('Authorization', `Bearer ${token}`)
                     .expect(200)
                     .expect(function (res) {

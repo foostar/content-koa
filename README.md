@@ -260,6 +260,14 @@ fields        | 默认值["id", "type", "tags", "title", "category", "createdAt"
 }
 ```
 
+
+### Remove
+**DELETE** `/api/contents/:id`
+
+删除内容，如果文章已经发布到其他平台则不能删除
+
+
+
 ### Acquire
 
 锁定一个文章，不允许他人修改。

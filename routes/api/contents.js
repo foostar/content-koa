@@ -16,5 +16,6 @@ router.post('/:id/release', $.release);
 
 router.get('/:id', $.show);
 router.patch('/:id', $.update);
+router.del('/:id', $.remove);
 
 module.exports = router;

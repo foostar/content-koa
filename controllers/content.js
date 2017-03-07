@@ -1,4 +1,5 @@
 const Content = require('db/mongo/content');
+const Reproduction = require('db/mongo/reproduction');
 const htmlToText = require('html-to-text');
 const nodejieba = require('nodejieba');
 
@@ -133,6 +134,21 @@ exports.update = async (ctx, next) => {
     _.assign(con, update);
 
     con = await con.save();
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: _.pick(con, CONTENT_FIELDS)
+    };
+};
+
+exports.remove = async (ctx, next) => {
+    let con = await verifyAndFindOne(ctx, ctx.params.id);
+
+    let nreprod = await Reproduction.count({content: con.id});
+    ctx.assert(nreprod === 0, 409, '文章已被发布，不能删除', {code: 101004});
+    await con.remove();
     ctx.body = {
         status: {
             code: 0,
