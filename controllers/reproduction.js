@@ -1,10 +1,11 @@
 const Reproduction = require('db/mongo/reproduction');
+const Content = require('db/mongo/content');
 const mongoose = require('mongoose');
 const _ = require('lodash');
 const moment = require('moment');
 
-const FIELDS = ['link', 'upstream', 'publisher', 'content', 'date', 'publishAt', 'view', 'custom', 'createdAt', 'updatedAt'];
-const GROUP_FIELDS = {upstream: '$upstream', content: '$upstream', publisher: '$publisher', link: '$link', date: '$date'};
+const FIELDS = ['link', 'upstream', 'publisher', 'author', 'contentType', 'content', 'date', 'publishAt', 'view', 'custom', 'status', 'createdAt', 'updatedAt'];
+const GROUP_FIELDS = {upstream: '$upstream', content: '$upstream', publisher: '$publisher', link: '$link', author: 'author', date: '$date'};
 
 function makeCondition (arg) {
     let condition = {};
@@ -38,6 +39,11 @@ function makeCondition (arg) {
     if (arg.publishers) {
         const publishers = _.isArray(arg.publishers) ? arg.publishers : [arg.publishers];
         condition['publisher'] = {'$in': publishers.map(mongoose.Types.ObjectId)};
+    }
+
+    if (arg.authors) {
+        const authors = _.isArray(arg.authors) ? arg.authors : [arg.authors];
+        condition['author'] = {'$in': authors.map(mongoose.Types.ObjectId)};
     }
 
     return condition;
@@ -88,8 +94,15 @@ exports.list = async (ctx, next) => {
 
 const upsertOne = async function (curUser, item) {
     item.date = moment(item.date).format('YYYYMMDD');
+    if (item.content && (!item.author || !item.contentType)) {
+        let con = await Content.findById(item.content);
+        if (con) {
+            if (!item.author) item.author = con.author;
+            if (!item.contentType) item.contentType = con.type;
+        }
+    }
     const {link, date} = item;
-    let reprod = await Reproduction.findOne({link});
+    let reprod = await Reproduction.findOne({link}, null, {sort: {date: -1}});
 
     if (!reprod) {
         reprod = new Reproduction(Object.assign({publisher: curUser}, item));
