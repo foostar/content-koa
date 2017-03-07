@@ -236,7 +236,7 @@ exports.search = async (ctx, next) => {
     if (ctx.query.keyword) condition['textualContent'] = new RegExp(escapeRegExp(nodejieba.cut(ctx.query.keyword, true).join(' ')), 'im');
 
     const count = await Content.count(condition);
-    let contents = await Content.find(condition, returnFields.join(' '), options);
+    let contents = await Content.find(condition, returnFields.join(' '), options).sort({ createdAt: -1 });
     contents = contents.map(x => _.pick(x, returnFields));
 
     ctx.body = {
