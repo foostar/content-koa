@@ -77,10 +77,14 @@ exports.signin = async (ctx, next) => {
 // };
 
 exports.list = async (ctx, next) => {
-    let {limit = 20, skip = 0} = ctx.query;
+    let {limit = 20, skip = 0, username} = ctx.query;
     limit = Math.max(Math.min(limit, 100), 20);
+    const conditions = {level: {$gt: 0}};
+    if (username) {
+        conditions.username = new RegExp(username);
+    }
     const users = await User.find(
-        {level: { $gt: 0 }},
+        conditions,
         null,
         {skip, limit}
     );

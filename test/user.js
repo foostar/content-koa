@@ -15,12 +15,11 @@ describe('user', function () {
 
     describe('create', function () {
         it('should return 200', async function () {
-            let res = await request(app)
+            return request(app)
                     .post('/api/users')
                     .set('Authorization', `Bearer ${token}`)
                     .send({'username': 'test_xxx', 'password': '123456', 'level': 1})
                     .expect(200);
-            return User.remove({_id: res.body.data.id}).exec();
         });
     });
 
@@ -37,6 +36,23 @@ describe('user', function () {
                             throw new Error("result isn't modified");
                         }
                     });
+        });
+    });
+
+    describe('search by username', function () {
+        it('should return 200', async function () {
+            const res = await request(app)
+                    .get('/api/users?username=test_xx')
+                    .set('Authorization', `Bearer ${token}`)
+                    .send({'username': 'test_xxx', 'password': '123456', 'level': 1})
+                    .expect(200)
+                    .expect(function (res) {
+                        if (res.body.status.code !== 0) throw new Error("code isn't 0");
+                        if (res.body.data[0].username !== 'test_xxx') {
+                            throw new Error('search fail');
+                        }
+                    });
+            return User.remove({_id: res.body.data[0].id}).exec();
         });
     });
 });
