@@ -1,4 +1,5 @@
 const Content = require('db/mongo/content');
+const Reproduction = require('db/mongo/reproduction');
 const htmlToText = require('html-to-text');
 const nodejieba = require('nodejieba');
 
@@ -142,6 +143,21 @@ exports.update = async (ctx, next) => {
     };
 };
 
+exports.remove = async (ctx, next) => {
+    let con = await verifyAndFindOne(ctx, ctx.params.id);
+
+    let nreprod = await Reproduction.count({content: con.id});
+    ctx.assert(nreprod === 0, 409, '文章已被发布，不能删除', {code: 101004});
+    await con.remove();
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: _.pick(con, CONTENT_FIELDS)
+    };
+};
+
 var commonTags = [];
 function updateTag (latest) {
     let m = _.pull(commonTags, latest);
@@ -236,7 +252,7 @@ exports.search = async (ctx, next) => {
     if (ctx.query.keyword) condition['textualContent'] = new RegExp(escapeRegExp(nodejieba.cut(ctx.query.keyword, true).join(' ')), 'im');
 
     const count = await Content.count(condition);
-    let contents = await Content.find(condition, returnFields.join(' '), options);
+    let contents = await Content.find(condition, returnFields.join(' '), options).sort({ createdAt: -1 });
     contents = contents.map(x => _.pick(x, returnFields));
 
     ctx.body = {
