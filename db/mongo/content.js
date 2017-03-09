@@ -25,6 +25,7 @@ const content = mongoose.Schema({
 }, {
     timestamps: true
 });
+content.index({ createdAt: -1 });
 content.index({ author: 1, createdAt: -1 });
 content.index({ tags: 1, category: -1 });
 // createIndex(
