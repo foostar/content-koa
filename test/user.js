@@ -44,15 +44,14 @@ describe('user', function () {
             const res = await request(app)
                     .get('/api/users?username=test_xx')
                     .set('Authorization', `Bearer ${token}`)
-                    .send({'username': 'test_xxx', 'password': '123456', 'level': 1})
                     .expect(200)
                     .expect(function (res) {
                         if (res.body.status.code !== 0) throw new Error("code isn't 0");
-                        if (res.body.data[0].username !== 'test_xxx') {
+                        if (res.body.data.users[0].username !== 'test_xxx') {
                             throw new Error('search fail');
                         }
                     });
-            return User.remove({_id: res.body.data[0].id}).exec();
+            return User.remove({_id: res.body.data.users[0].id}).exec();
         });
     });
 });
