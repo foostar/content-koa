@@ -77,23 +77,31 @@ exports.signin = async (ctx, next) => {
 // };
 
 exports.list = async (ctx, next) => {
-    let {limit = 20, skip = 0, username} = ctx.query;
-    limit = Math.max(Math.min(limit, 100), 20);
+    let {limit = 10, skip = 0, username} = ctx.query;
+    skip = Number(skip);
+    limit = Math.max(Math.min(limit, 100), 10);
     const conditions = {level: {$gt: 0}};
+
     if (username) {
         conditions.username = new RegExp(username);
     }
+
     const users = await User.find(
         conditions,
         null,
         {skip, limit}
     );
+    const count = await User.count(conditions);
     ctx.body = {
         status: {
             code: 0,
             message: 'success'
         },
-        data: users.map(user => _.pick(user, RETURN_FIELDS))
+        data: {
+            users: users.map(user => _.pick(user, RETURN_FIELDS)),
+            count,
+            skip
+        }
     };
 };
 
