@@ -25,7 +25,8 @@ exports.uptoken = async (ctx, next) => {
         }
     };
 };
-exports.replaceSrc = (ctx, next) => {
+
+exports.replaceSrc = async (ctx, next) => {
     let {bucket, key, path} = ctx.request.body;
     bucket = bucket || 'gp-baijia-public';
     key = key || Date.now();
@@ -34,25 +35,23 @@ exports.replaceSrc = (ctx, next) => {
     const EncodedEntryURI = `${bucket}:${key}`;
     const fetchUrl = `http://iovip.qbox.me/fetch/${path}/to/${EncodedEntryURI}`;
     const token = qiniu.util.generateAccessToken(fetchUrl);
-    return fetch(fetchUrl, {
+
+    const res = await fetch(fetchUrl, {
         method: 'POST',
         headers: {
             'Authorization': token,
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-    })
-    .then(response => response.json())
-    .then(json => {
-        if (!json.key) {
-            ctx.assert(json, 400, '操作失败', {code: 1030001});
-        }
-        ctx.body = {
-            status: {
-                code: 0,
-                message: 'success'
-            },
-            data: json
-        };
-    });
+    }).then(response => response.json());
+
+    ctx.assert(res.key, 400, '操作失败', {code: 1030001});
+
+    ctx.body = {
+        status: {
+            code: 0,
+            message: 'success'
+        },
+        data: res
+    };
 };
 

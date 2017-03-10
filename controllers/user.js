@@ -37,9 +37,6 @@ exports.signin = async (ctx, next) => {
     const user = await User.findOne({username});
 
     const token = getToken(_.pick(user, 'id', 'username', 'level'));
-
-    console.log(user.bindUpstreams);
-
     ctx.body = {
         status: {
             code: 0,
@@ -155,13 +152,6 @@ exports.changePassword = async (ctx, next) => {
     await user.save();
 
     const token = getToken(_.pick(user, 'id', 'username', 'level'));
-
-    await new Promise((resolve) => {
-        setTimeout(() => {
-            resolve();
-            console.log('resolve');
-        }, 3000);
-    });
 
     ctx.body = {
         status: {
