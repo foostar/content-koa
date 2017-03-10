@@ -1,4 +1,5 @@
 const Content = require('db/mongo/content');
+const User = require('db/mongo/user');
 const Reproduction = require('db/mongo/reproduction');
 const htmlToText = require('html-to-text');
 const nodejieba = require('nodejieba');
@@ -248,7 +249,11 @@ exports.search = async (ctx, next) => {
     }
 
     if (ctx.query.category) condition['category'] = ctx.query.category;
-    if (ctx.query.author) condition['author'] = ctx.query.author;
+    if (ctx.query.author) {
+        const author = await User.findOne({username: ctx.query.author});
+        console.log(typeof author.id, typeof author._id);
+        condition['author'] = author._id;
+    };
     if (ctx.query.keyword) condition['textualContent'] = new RegExp(escapeRegExp(nodejieba.cut(ctx.query.keyword, true).join(' ')), 'im');
 
     const count = await Content.count(condition);
