@@ -3,8 +3,14 @@ const mongoose = require('mongoose');
 const {ObjectId} = mongoose.SchemaTypes;
 
 const schema = mongoose.Schema({
-    platform: {type: String, required: true},
-    account: {type: String, required: true},
+    platform: {
+        type: String,
+        required: true
+    },
+    account: {
+        type: String,
+        required: true
+    },
     password: String,
     nickname: String,
     custom: String,

@@ -25,7 +25,7 @@ const content = mongoose.Schema({
         required: true
     },
     textualContent: {
-        type: Array,
+        type: String,
         required: true},
     tags: {
         type: [String],
