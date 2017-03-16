@@ -11,10 +11,6 @@ const content = mongoose.Schema({
         type: String,
         required: true
     },
-    textualTitle: {
-        type: String,
-        required: true
-    },
     type: {
         type: String,
         required: true,
@@ -29,7 +25,7 @@ const content = mongoose.Schema({
         required: true
     },
     textualContent: {
-        type: String,
+        type: Array,
         required: true},
     tags: {
         type: [String],
@@ -56,8 +52,6 @@ const content = mongoose.Schema({
 content.index({createdAt: -1});
 content.index({author: 1, createdAt: -1});
 content.index({tags: 1, category: -1});
-content.index({textualTitle: 1, category: -1});
-content.index({textualContent: 1, category: -1});
 
 // createIndex(
 //    {

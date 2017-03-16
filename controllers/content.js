@@ -20,7 +20,6 @@ exports.create = async (ctx, next) => {
     con.originalContent = con.content;
     if (con.type === 'article') {
         con.textualContent = nodejieba.cut(htmlToText.fromString(con.content), true).join(' ');
-        con.textualTitle = nodejieba.cut(con.title, true).join(' ');
     }
     try {
         const content = await new Content(con).save();
@@ -135,7 +134,6 @@ exports.update = async (ctx, next) => {
     let update = _.pick(ctx.request.body, 'title', 'content', 'category');
     if (con.type === 'article' && update.content) {
         update.textualContent = nodejieba.cut(htmlToText.fromString(update.content), true).join(' ');
-        con.textualTitle = nodejieba.cut(update.title, true).join(' ');
     }
     _.assign(con, update);
 
@@ -187,7 +185,7 @@ exports.listCommonTags = async (ctx, next) => {
 exports.addTag = async (ctx, next) => {
     await verifyAndFindOne(ctx, ctx.params.id);
 
-    const update = {'$set': {'redactor': ctx.state.user.id}, '$addToSet': {'tags': ctx.params.tag}};
+    const update = {$set: {redactor: ctx.state.user.id}, $addToSet: {'tags': ctx.params.tag}};
     let con = await Content.findByIdAndUpdate(ctx.params.id, update, {new: true});
     ctx.assert(con, 404, '没有该文章', {code: 101001});
 
@@ -205,7 +203,7 @@ exports.addTag = async (ctx, next) => {
 exports.removeTag = async (ctx, next) => {
     await verifyAndFindOne(ctx, ctx.params.id);
 
-    const update = {'$set': {'redactor': ctx.state.user.id}, '$pull': {'tags': ctx.params.tag}};
+    const update = {$set: {redactor: ctx.state.user.id}, $pull: {tags: ctx.params.tag}};
     let con = await Content.findByIdAndUpdate(ctx.params.id, update, {new: true});
     ctx.assert(con, 404, '没有该文章', {code: 101001});
 
@@ -241,25 +239,24 @@ exports.search = async (ctx, next) => {
     const condition = {};
     if (ctx.query.includeTags) {
         const includeTags = _.isArray(ctx.query.includeTags) ? ctx.query.includeTags : [ctx.query.includeTags];
-        condition['tags'] = {'$all': includeTags};
+        condition.tags = {$all: includeTags};
     }
     if (ctx.query.excludeTags) {
         const excludeTags = _.isArray(ctx.query.excludeTags) ? ctx.query.excludeTags : [ctx.query.excludeTags];
-        if (!condition['tags']) {
-            condition['tags'] = {'$nin': excludeTags};
+        if (!condition.tags) {
+            condition.tags = {'$nin': excludeTags};
         } else {
-            condition['$and'] = [{'tags': condition['tags']}, {'tags': {'$nin': excludeTags}}];
-            delete condition['tags'];
+            condition.$and = [{tags: condition.tags}, {tags: {'$nin': excludeTags}}];
+            delete condition.tags;
         }
     }
 
     if (ctx.query.category) condition['category'] = ctx.query.category;
     if (ctx.query.author) {
         const author = await User.findOne({username: ctx.query.author});
-        condition['author'] = author._id;
+        condition.author = author._id;
     };
 
-    if (ctx.query.title) condition['textualTitle'] = new RegExp(escapeRegExp(nodejieba.cut(ctx.query.title, true).join(' ')), 'im');
     if (ctx.query.keyword) condition['textualContent'] = new RegExp(escapeRegExp(nodejieba.cut(ctx.query.keyword, true).join(' ')), 'im');
 
     const count = await Content.count(condition);
