@@ -16,7 +16,7 @@ describe('七牛图片测试', function () {
                 .expect(400);
     });
     it('成功返回替换图片', async function () {
-        const data = { path: 'http://mmbiz.qpic.cn/mmbiz/k0UVxv3BTLJs4606VnwPsT5ibjaDicX7GicAyicC0OpEFFWUEWxTZEb6OXxibdAdsuujgacoLv8vEmRytibqEH4al8WA/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1' };
+        const data = {path: 'http://mmbiz.qpic.cn/mmbiz/k0UVxv3BTLJs4606VnwPsT5ibjaDicX7GicAyicC0OpEFFWUEWxTZEb6OXxibdAdsuujgacoLv8vEmRytibqEH4al8WA/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1'};
         return request(app)
                 .post('/api/qiniu/replace-src')
                 .set('Authorization', `Bearer ${token}`)

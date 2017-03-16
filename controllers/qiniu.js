@@ -45,7 +45,7 @@ exports.replaceSrc = async (ctx, next) => {
             }
         }).then(response => response.json());
 
-        ctx.assert(res.key, 400, '七牛服务错误', { code: 1030001 });
+        ctx.assert(res.key, 400, '七牛服务错误', {code: 1030001});
 
         ctx.body = {
             status: {

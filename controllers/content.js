@@ -18,18 +18,22 @@ exports.create = async (ctx, next) => {
     tags.push(ctx.state.user.level === 1 ? '精品' : '原创');
     con.tags = tags;
     con.originalContent = con.content;
-    if (con['type'] === 'article') {
-        con['textualContent'] = nodejieba.cut(htmlToText.fromString(con['content']), true).join(' ');
+    if (con.type === 'article') {
+        con.textualContent = nodejieba.cut(htmlToText.fromString(con.content), true).join(' ');
+        con.textualTitle = nodejieba.cut(con.title, true).join(' ');
     }
-    const content = new Content(con);
-    const doc = await content.save();
-    ctx.body = {
-        status: {
-            code: 0,
-            message: 'success'
-        },
-        data: {id: doc.id}
-    };
+    try {
+        const content = await new Content(con).save();
+        ctx.body = {
+            status: {
+                code: 0,
+                message: 'success'
+            },
+            data: {id: content.id}
+        };
+    } catch (err) {
+        ctx.throw(400, '创建文章错误', {code: 101003});
+    }
 };
 
 exports.list = async (ctx, next) => {
@@ -129,8 +133,9 @@ exports.update = async (ctx, next) => {
     let con = await verifyAndFindOne(ctx, ctx.params.id);
 
     let update = _.pick(ctx.request.body, 'title', 'content', 'category');
-    if (con['type'] === 'article' && update['content']) {
-        update['textualContent'] = nodejieba.cut(htmlToText.fromString(update['content']), true).join(' ');
+    if (con.type === 'article' && update.content) {
+        update.textualContent = nodejieba.cut(htmlToText.fromString(update.content), true).join(' ');
+        con.textualTitle = nodejieba.cut(update.title, true).join(' ');
     }
     _.assign(con, update);
 
@@ -159,7 +164,7 @@ exports.remove = async (ctx, next) => {
     };
 };
 
-var commonTags = [];
+let commonTags = [];
 function updateTag (latest) {
     let m = _.pull(commonTags, latest);
     m.unshift(latest);
@@ -219,11 +224,11 @@ exports.search = async (ctx, next) => {
     ctx.assert(
         userLevel === 0 || userLevel === 2,
         400,
-        '没有修改此文章的权限',
+        '没有搜索文章的权限',
         {code: 101002}
     );
 
-    let options = {limit: 5, skip: 0, populate: 'author'};
+    const options = {limit: 5, skip: 0, populate: 'author'};
     if (ctx.query.limit) options.limit = Math.min(parseInt(ctx.query.limit), 100) || 5;
     if (ctx.query.skip) options.skip = parseInt(ctx.query.skip) || 0;
 
@@ -253,10 +258,12 @@ exports.search = async (ctx, next) => {
         const author = await User.findOne({username: ctx.query.author});
         condition['author'] = author._id;
     };
+
+    if (ctx.query.title) condition['textualTitle'] = new RegExp(escapeRegExp(nodejieba.cut(ctx.query.title, true).join(' ')), 'im');
     if (ctx.query.keyword) condition['textualContent'] = new RegExp(escapeRegExp(nodejieba.cut(ctx.query.keyword, true).join(' ')), 'im');
 
     const count = await Content.count(condition);
-    let contents = await Content.find(condition, returnFields.join(' '), options).sort({ createdAt: -1 });
+    let contents = await Content.find(condition, returnFields.join(' '), options).sort({createdAt: -1});
     contents = contents.map(x => _.pick(x, returnFields));
 
     ctx.body = {

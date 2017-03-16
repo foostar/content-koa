@@ -14,7 +14,7 @@ const schema = mongoose.Schema({
     timestamps: true
 });
 
-schema.index({ account: 1, platform: 1 });
+schema.index({account: 1, platform: 1});
 
 schema.pre('save', function (next) {
     this.set('_id', mongoose.Types.ObjectId(hash(this.platform + ':' + this.account).slice(0, 12)));
