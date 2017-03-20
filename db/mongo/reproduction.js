@@ -40,5 +40,4 @@ schema.index({link: 1, date: -1}, {unique: true});
 // schema.index({upstream: 1,publishAt: 1,updatedAt: -1});
 // schema.index({publishAt: 1,updatedAt: -1});
 
-module.exports = mongoose.model('reproduction',
-    schema);
+module.exports = mongoose.model('reproduction', schema);
