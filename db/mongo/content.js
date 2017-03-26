@@ -2,12 +2,35 @@ const mongoose = require('mongoose');
 const {ObjectId} = mongoose.SchemaTypes;
 
 const content = mongoose.Schema({
-    title: {type: String},
-    type: {type: String, required: true, enum: ['article', 'video']},
-    content: {type: String, required: true},
-    originalContent: {type: String, required: true},
-    textualContent: {type: String, required: true},
-    tags: {type: [String], default: []},
+    unique: {
+        type: String,
+        sparse: true,
+        unique: true
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    type: {
+        type: String,
+        required: true,
+        enum: ['article', 'video']
+    },
+    content: {
+        type: String,
+        required: true
+    },
+    originalContent: {
+        type: String,
+        required: true
+    },
+    textualContent: {
+        type: String,
+        required: true},
+    tags: {
+        type: [String],
+        default: []
+    },
     category: {
         type: String,
         required: true,
@@ -25,9 +48,11 @@ const content = mongoose.Schema({
 }, {
     timestamps: true
 });
-content.index({ createdAt: -1 });
-content.index({ author: 1, createdAt: -1 });
-content.index({ tags: 1, category: -1 });
+
+content.index({createdAt: -1});
+content.index({author: 1, createdAt: -1});
+content.index({tags: 1, category: -1});
+
 // createIndex(
 //    {
 //      content: "text",

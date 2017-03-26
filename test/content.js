@@ -17,7 +17,7 @@ describe('content', function () {
     });
 
     after(async function () {
-        await Content.remove({author: accountId}).exec();
+        await Content.remove({author: accountId});
     });
 
     describe('create', function () {
@@ -25,8 +25,18 @@ describe('content', function () {
             return request(app)
                     .post('/api/contents')
                     .set('Authorization', `Bearer ${token}`)
-                    .send(testContent)
+                    .send(Object.assign({}, testContent, {unique: 'asdzxc'}))
                     .expect(200);
+        });
+    });
+
+    describe('repeat create', function () {
+        it('should return 400', async function () {
+            return request(app)
+                .post('/api/contents')
+                .set('Authorization', `Bearer ${token}`)
+                .send(Object.assign({}, testContent, {unique: 'asdzxc'}))
+                .expect(400);
         });
     });
 
