@@ -9,7 +9,11 @@ const schema = mongoose.Schema({
     nickname: String,
     custom: String,
     session: Array,
-    creater: ObjectId
+    creater: ObjectId,
+    status: {
+        type: String,
+        enum: ['异常']
+    }
 }, {
     timestamps: true
 });
