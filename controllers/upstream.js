@@ -75,8 +75,11 @@ exports.update = async (ctx, next) => {
 
     if (ctx.request.body.session) {
         ups.session = ctx.request.body.session;
-        await ups.save();
     }
+    if (ctx.request.body.remark) {
+        ups.remark = ctx.request.body.remark;
+    }
+    await ups.save();
 
     ctx.body = {
         status: {
