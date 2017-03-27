@@ -11,7 +11,6 @@ const schema = mongoose.Schema({
         type: String,
         required: true
     },
-    remark: String,
     password: String,
     nickname: String,
     custom: String,
