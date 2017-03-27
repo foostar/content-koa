@@ -93,6 +93,7 @@ exports.list = async (ctx, next) => {
 };
 
 const upsertOne = async function (curUser, item) {
+    console.log(moment(item.date).format('YYYYMMDD'));
     item.date = moment(item.date).format('YYYYMMDD');
     if (item.content && (!item.author || !item.contentType)) {
         let con = await Content.findById(item.content);
@@ -110,9 +111,10 @@ const upsertOne = async function (curUser, item) {
     } else {
         let data = Object.assign(_.omit(reprod.toJSON(), '_id', 'createdAt', 'updatedAt', '__v'), item);
         return Reproduction.findOneAndUpdate(
-        {link, date},
-        {$set: _.omit(data, 'link', 'date')},
-        {upsert: true, new: true});
+            {link, date},
+            {$set: _.omit(data, 'link', 'date')},
+            {upsert: true, new: true}
+        );
     }
 };
 

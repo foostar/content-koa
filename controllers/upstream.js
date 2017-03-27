@@ -2,7 +2,7 @@ const Upstream = require('db/mongo/upstream');
 // const hash = require('utils/hash');
 const _ = require('lodash');
 
-const FIELDS = ['id', 'platform', 'nickname', 'custom', 'password', 'account', 'session', 'creater', 'createdAt', 'updatedAt'];
+const FIELDS = ['id', 'remark', 'platform', 'nickname', 'custom', 'password', 'account', 'session', 'creater', 'createdAt', 'updatedAt'];
 
 function escapeRegExp (str) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&'); // eslint-disable-line
@@ -75,8 +75,11 @@ exports.update = async (ctx, next) => {
 
     if (ctx.request.body.session) {
         ups.session = ctx.request.body.session;
-        await ups.save();
     }
+    if (ctx.request.body.remark) {
+        ups.remark = ctx.request.body.remark;
+    }
+    await ups.save();
 
     ctx.body = {
         status: {
